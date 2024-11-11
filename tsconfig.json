@@ -22,6 +22,13 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",              // JavaScript 파일 포함
+    "**/*.jsx",             // JSX 파일 포함
+    ".next/types/**/*.ts"
+  ],
   "exclude": ["node_modules"]
 }
