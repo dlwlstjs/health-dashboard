@@ -23,6 +23,7 @@ export default function Home() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+        <div>
         <div className="flex justify-center">
           <Image
             src="/doctor.png"
@@ -34,7 +35,7 @@ export default function Home() {
         </div>
 
         {!showSignup && (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 mt-12 mb-12">
             <div className="flex items-center gap-2 justify-end">
               <div>
                 <label className="text-sm sm:text-base font-[family-name:var(--font-geist-mono)]">
@@ -67,6 +68,7 @@ export default function Home() {
             <SignupButton onSignup={handleSignupClick} />
           </div>
         )}
+        </div>
       </main>
     </div>
   );
