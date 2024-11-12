@@ -1,7 +1,9 @@
+// app/page.tsx
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import PatientAddModal from "@/app/components/PatientAddModal"; // 모달 컴포넌트 가져오기
 
 interface User {
   id: number;
@@ -16,10 +18,11 @@ interface User {
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 관리
   const router = useRouter();
 
+  // 임시 데이터 설정
   useEffect(() => {
-    // 임시 데이터 설정
     const tempUsers = [
       {
         id: 1,
@@ -29,7 +32,7 @@ export default function Home() {
         birthYear: 1990,
         birthMonth: 5,
         birthDay: 15,
-        email: "chulsoo@example.com"
+        email: "chulsoo@example.com",
       },
       {
         id: 2,
@@ -39,7 +42,7 @@ export default function Home() {
         birthYear: 1985,
         birthMonth: 8,
         birthDay: 25,
-        email: "younghee@example.com"
+        email: "younghee@example.com",
       },
       {
         id: 3,
@@ -49,17 +52,27 @@ export default function Home() {
         birthYear: 1992,
         birthMonth: 2,
         birthDay: 10,
-        email: "jimin@example.com"
-      }
+        email: "jimin@example.com",
+      },
     ];
-
-    // 임시 데이터를 상태에 설정
     setUsers(tempUsers);
   }, []);
 
   const handleLogout = () => {
-    // 로그아웃 로직
     router.push("/login");
+  };
+
+  const handleAddPatient = (newPatient: { name: string; gender: string; birthDate: string; email: string }) => {
+    // 새 환자 추가
+    const newUser = {
+      id: users.length + 1,
+      userId: `user${users.length + 1}`,
+      ...newPatient,
+      birthYear: parseInt(newPatient.birthDate.split("-")[0]),
+      birthMonth: parseInt(newPatient.birthDate.split("-")[1]),
+      birthDay: parseInt(newPatient.birthDate.split("-")[2]),
+    };
+    setUsers((prevUsers) => [...prevUsers, newUser]);
   };
 
   return (
@@ -77,8 +90,11 @@ export default function Home() {
 
         {/* 환자 목록과 환자 추가 버튼 */}
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl">환자 목록</h1>
-          <button className="rounded border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-6 sm:min-w-44">
+          <h1 className="text-3xl font-bold">환자 목록</h1>
+          <button
+            onClick={() => setIsModalOpen(true)} // 환자 추가 버튼 클릭 시 모달 열기
+            className="rounded border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-6 sm:min-w-44"
+          >
             환자 추가
           </button>
         </div>
@@ -125,6 +141,13 @@ export default function Home() {
           </table>
         </div>
       </div>
+
+      {/* 환자 추가 모달 */}
+      <PatientAddModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)} // 모달 닫기
+        onAddPatient={handleAddPatient} // 환자 추가
+      />
     </div>
   );
 }
