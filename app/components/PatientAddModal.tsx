@@ -100,8 +100,8 @@ const PatientAddModal: React.FC<ModalProps> = ({ isOpen, onClose, onAddPatient }
             />
           </div>
 
-          {/* 버튼 섹션: 취소 버튼을 추가 버튼 왼쪽에 배치 */}
-          <div className="mt-6 flex justify-between">
+          {/* 버튼 섹션: 취소와 추가 버튼 간의 간격을 줄이기 위해 justify-end 사용 */}
+          <div className="mt-6 flex justify-end gap-4">
             <button
               type="button"
               onClick={onClose} // 취소 버튼 클릭 시 모달 닫기
