@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import { SignupFormProps } from "../type/SignupFormProps";
+import { SignupFormProps } from "../types/SignupFormProps";
 
 const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
