@@ -1,13 +1,14 @@
-// app/components/LoginButton.js
 import React from "react";
 
-const LoginButton = () => {
-  const handleLoginClick = () => {
-    // 로그인 처리 로직을 여기에 추가
-    const userId = prompt("아이디를 입력하세요");
-    const password = prompt("비밀번호를 입력하세요");
+// LoginButton 컴포넌트에 필요한 타입을 정의
+interface LoginButtonProps {
+  userId: string;
+  password: string;
+}
 
-    // 간단한 로그인 검증 (예시)
+const LoginButton: React.FC<LoginButtonProps> = ({ userId, password }) => {
+  const handleLoginClick = () => {
+    // 로그인 처리 로직
     if (userId === "testUser" && password === "testPassword") {
       alert("로그인 성공!");
       // 로그인 성공 후 리다이렉트 처리 등 추가

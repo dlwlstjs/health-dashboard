@@ -8,7 +8,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -20,14 +20,16 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "typeRoots": ["node_modules/@types"],  // eslint 제거
+    "types": []  // 불필요한 타입 정의 추가 방지
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "**/*.js",              // JavaScript 파일 포함
-    "**/*.jsx",             // JSX 파일 포함
+    "**/*.js",
+    "**/*.jsx",
     ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]

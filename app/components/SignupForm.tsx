@@ -42,24 +42,6 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
     onSubmit();
   };
 
-  const handleDomainChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const domain = e.target.value;
-    if (domain === "custom") {
-      setFormData((prevState) => ({
-        ...prevState,
-        isCustomDomain: true,
-        emailDomain: "",
-      }));
-    } else {
-      setFormData((prevState) => ({
-        ...prevState,
-        isCustomDomain: false,
-        emailDomain: domain,
-        emailPrefix: prevState.emailPrefix.split("@")[0], // '@' 앞부분 유지
-      }));
-    }
-  };
-
   return (
     <form
       onSubmit={handleSubmit}
@@ -209,14 +191,11 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
           </div>
         </div>
       </div>
-
-      {/* 이메일 입력 */}
       {/* 이메일 입력 */}
       <div className="flex flex-col gap-2">
         <label className="text-sm sm:text-base">생년월일</label>
         <div className="flex gap-2 mt-0">
           {" "}
-          {/* mt-0 으로 마진 제거 */}
           <input
             type="text"
             name="emailPrefix"
