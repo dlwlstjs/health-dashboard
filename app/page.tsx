@@ -1,9 +1,9 @@
-// app/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PatientAddModal from "@/app/components/PatientAddModal"; // 모달 컴포넌트 가져오기
+import SurveyResultModal from "@/app/components/SurveyResultModal"; // 문진 결과 모달 컴포넌트 가져오기
 
 interface User {
   id: number;
@@ -18,7 +18,9 @@ interface User {
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 관리
+  const [isModalOpen, setIsModalOpen] = useState(false); // 환자 추가 모달 상태
+  const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false); // 문진 결과 모달 상태
+  const [selectedUserName, setSelectedUserName] = useState(""); // 선택된 사용자 이름
   const router = useRouter();
 
   // 임시 데이터 설정
@@ -75,6 +77,20 @@ export default function Home() {
     setUsers((prevUsers) => [...prevUsers, newUser]);
   };
 
+  const handleViewSurveyResults = (userName: string) => {
+    setSelectedUserName(userName); // 선택된 사용자 이름 저장
+    setIsSurveyModalOpen(true); // 문진 결과 모달 열기
+  };
+
+  const handleSendSurveyLink = (userName: string) => {
+    // 'name' 쿼리 파라미터와 함께 '/survey'로 이동
+    router.push(`/survey?name=${userName}`);
+  };
+
+  const handleCloseSurveyModal = () => {
+    setIsSurveyModalOpen(false); // 문진 결과 모달 닫기
+  };
+
   return (
     <div className="min-h-screen p-8 sm:p-20 font-[family-name:var(--font-geist-sans)] flex justify-center items-start mt-20">
       <div className="w-full max-w-5xl">
@@ -122,7 +138,7 @@ export default function Home() {
                   <td className="border-b py-2 px-4 text-center">
                     <button
                       className="bg-black text-white py-1 px-2 rounded hover:bg-gray-800"
-                      onClick={() => alert(`문진 링크 발송: 사용자 ${user.id}`)}
+                      onClick={() => handleSendSurveyLink(user.name)} // 발송 버튼 클릭 시 문진 링크 발송
                     >
                       발송
                     </button>
@@ -130,7 +146,7 @@ export default function Home() {
                   <td className="border-b py-2 px-4 text-center">
                     <button
                       className="bg-white text-black py-1 px-2 rounded border border-black hover:bg-gray-100"
-                      onClick={() => alert(`문진 결과 보기: 사용자 ${user.id}`)}
+                      onClick={() => handleViewSurveyResults(user.name)} // 문진 결과 보기 클릭 시 모달 열기
                     >
                       보기
                     </button>
@@ -147,6 +163,13 @@ export default function Home() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)} // 모달 닫기
         onAddPatient={handleAddPatient} // 환자 추가
+      />
+
+      {/* 문진 결과 모달 */}
+      <SurveyResultModal
+        isOpen={isSurveyModalOpen}
+        onClose={handleCloseSurveyModal} // 문진 결과 모달 닫기
+        userName={selectedUserName} // 문진 결과에서 사용자 이름 전달
       />
     </div>
   );
