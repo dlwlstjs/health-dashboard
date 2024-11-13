@@ -13,18 +13,10 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
     birthMonth: "",
     birthDay: "",
     emailPrefix: "",
-    emailDomain: "직접입력", // 기본 도메인
-    isCustomDomain: false,
+    emailDomain: "example.com", // 고정된 도메인
   });
 
   const [showPassword, setShowPassword] = useState(false);
-
-  // 오늘 날짜를 기준으로 생년월일 드롭다운 값 생성
-  const today = new Date();
-  const currentYear = today.getFullYear();
-  const years = Array.from({ length: 100 }, (_, index) => currentYear - index);
-  const months = Array.from({ length: 12 }, (_, index) => index + 1);
-  const days = Array.from({ length: 31 }, (_, index) => index + 1);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -36,11 +28,59 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("회원가입이 완료되었습니다!");
-    onSubmit();
+
+    const email = `${formData.emailPrefix}@${formData.emailDomain}`;
+
+    try {
+      const response = await fetch("/api/user/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: formData.userId,
+          password: formData.password,
+          name: formData.name,
+          gender: formData.gender,
+          birthYear: formData.birthYear,
+          birthMonth: formData.birthMonth,
+          birthDay: formData.birthDay,
+          email,
+        }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert("회원가입이 완료되었습니다!");
+        setFormData({
+          userId: "",
+          password: "",
+          name: "",
+          gender: "",
+          birthYear: "",
+          birthMonth: "",
+          birthDay: "",
+          emailPrefix: "",
+          emailDomain: "example.com",
+        });
+        onSubmit();
+      } else {
+        alert("회원가입 실패: " + (result.error || "서버 응답 확인 필요"));
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("회원가입 중 오류가 발생했습니다.");
+    }
   };
+
+  // 오늘 날짜를 기준으로 생년월일 드롭다운 값 생성
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const years = Array.from({ length: 100 }, (_, index) => currentYear - index);
+  const months = Array.from({ length: 12 }, (_, index) => index + 1);
+  const days: number[] = Array.from({ length: 31 }, (_, index) => index + 1);
 
   return (
     <form
@@ -191,11 +231,11 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
           </div>
         </div>
       </div>
+
       {/* 이메일 입력 */}
       <div className="flex flex-col gap-2">
-        <label className="text-sm sm:text-base">생년월일</label>
+        <label className="text-sm sm:text-base">이메일</label>
         <div className="flex gap-2 mt-0">
-          {" "}
           <input
             type="text"
             name="emailPrefix"
@@ -207,6 +247,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
           />
         </div>
       </div>
+
       {/* 가입하기 버튼 */}
       <button
         type="submit"

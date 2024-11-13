@@ -1,8 +1,12 @@
 "use client";
-import SignupForm from "@/app/components/SignupForm"; 
+import SignupForm from "@/app/components/SignupForm";
+import { useRouter } from "next/navigation";
 
 const SignupPage = () => {
+  const router = useRouter();
+
   const handleSignupFormSubmit = () => {
+    router.push("/login");  // 회원가입 후 로그인 페이지로 이동
   };
 
   return (
