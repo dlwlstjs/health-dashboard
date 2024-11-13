@@ -13,7 +13,6 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
     birthMonth: "",
     birthDay: "",
     emailPrefix: "",
-    emailDomain: "example.com", // 고정된 도메인
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -31,7 +30,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const email = `${formData.emailPrefix}@${formData.emailDomain}`;
+    const email = `${formData.emailPrefix}`;
 
     try {
       const response = await fetch("/api/user/signup", {

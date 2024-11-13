@@ -13,7 +13,7 @@ async function openDb() {
 
 export async function POST(req: Request) {
   const db = await openDb();
-  const { userId, password, name, gender, birthYear, birthMonth, birthDay, emailPrefix } = await req.json();
+  const { userId, password, name, gender, birthYear, birthMonth, birthDay, email } = await req.json();
 
   try {
     // 데이터 저장 SQL 실행
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
         name,
         gender,
         `${birthYear}-${birthMonth}-${birthDay}`,
-        `${emailPrefix}@example.com`,
+        `${email}`,
       ]
     );
     return NextResponse.json({ message: "회원가입 성공!" });
