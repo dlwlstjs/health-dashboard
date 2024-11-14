@@ -7,13 +7,28 @@ interface LoginButtonProps {
 }
 
 const LoginButton: React.FC<LoginButtonProps> = ({ userId, password }) => {
-  const handleLoginClick = () => {
-    // 로그인 처리 로직
-    if (userId === "testUser" && password === "testPassword") {
-      alert("로그인 성공!");
-      // 로그인 성공 후 리다이렉트 처리 등 추가
-    } else {
-      alert("로그인 실패! 아이디 또는 비밀번호를 확인하세요.");
+  const handleLoginClick = async () => {
+    try {
+      // 로그인 API 호출
+      const response = await fetch('/api/user/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, password }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert('로그인 성공!');
+        // 로그인 성공 후 추가 로직 작성 가능
+      } else {
+        alert(`로그인 실패: ${result.message}`);
+      }
+    } catch (error) {
+      alert('로그인 중 오류가 발생했습니다.');
+      console.error('로그인 오류:', error);
     }
   };
 

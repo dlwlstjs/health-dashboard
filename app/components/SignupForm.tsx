@@ -62,7 +62,6 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
           birthMonth: "",
           birthDay: "",
           emailPrefix: "",
-          emailDomain: "example.com",
         });
         onSubmit();
       } else {
