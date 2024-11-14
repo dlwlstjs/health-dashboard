@@ -7,7 +7,6 @@ import SurveyResultModal from "@/app/components/SurveyResultModal"; // 문진 �
 
 interface User {
   id: number;
-  userId: string;
   name: string;
   gender: string;
   birthYear: number;
@@ -23,58 +22,55 @@ export default function Home() {
   const [selectedUserName, setSelectedUserName] = useState(""); // 선택된 사용자 이름
   const router = useRouter();
 
-  // 임시 데이터 설정
+  // 데이터베이스에서 환자 목록 가져오기
   useEffect(() => {
-    const tempUsers = [
-      {
-        id: 1,
-        userId: "user1",
-        name: "김철수",
-        gender: "남",
-        birthYear: 1990,
-        birthMonth: 5,
-        birthDay: 15,
-        email: "chulsoo@example.com",
-      },
-      {
-        id: 2,
-        userId: "user2",
-        name: "이영희",
-        gender: "여",
-        birthYear: 1985,
-        birthMonth: 8,
-        birthDay: 25,
-        email: "younghee@example.com",
-      },
-      {
-        id: 3,
-        userId: "user3",
-        name: "박지민",
-        gender: "남",
-        birthYear: 1992,
-        birthMonth: 2,
-        birthDay: 10,
-        email: "jimin@example.com",
-      },
-    ];
-    setUsers(tempUsers);
-  }, []);
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/api/patients"); // API 경로 확인
+        if (!response.ok) {
+          throw new Error("네트워크 응답이 올바르지 않습니다.");
+        }
+        const data = await response.json();
+        setUsers(data);
+      } catch (error) {
+        console.error("데이터를 가져오는데 실패했습니다:", error);
+      }
+    };
+  
+    fetchData();
+  }, []);  
 
   const handleLogout = () => {
     router.push("/login");
   };
 
-  const handleAddPatient = (newPatient: { name: string; gender: string; birthDate: string; email: string }) => {
+  const handleAddPatient = async (newPatient: { name: string; gender: string; birthDate: string; email: string }) => {
     // 새 환자 추가
     const newUser = {
       id: users.length + 1,
-      userId: `user${users.length + 1}`,
       ...newPatient,
       birthYear: parseInt(newPatient.birthDate.split("-")[0]),
       birthMonth: parseInt(newPatient.birthDate.split("-")[1]),
       birthDay: parseInt(newPatient.birthDate.split("-")[2]),
     };
-    setUsers((prevUsers) => [...prevUsers, newUser]);
+
+    try {
+      const response = await fetch("/api/patient", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUser),
+      });
+
+      if (response.ok) {
+        setUsers((prevUsers) => [...prevUsers, newUser]);
+      } else {
+        console.error("환자 추가에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("API 요청 실패:", error);
+    }
   };
 
   const handleViewSurveyResults = (userName: string) => {

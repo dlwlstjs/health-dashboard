@@ -1,19 +1,21 @@
 import React from "react";
+import { useRouter } from "next/navigation"; // Next.js의 useRouter 훅 사용
 
-// LoginButton 컴포넌트에 필요한 타입을 정의
 interface LoginButtonProps {
   userId: string;
   password: string;
 }
 
 const LoginButton: React.FC<LoginButtonProps> = ({ userId, password }) => {
+  const router = useRouter(); // useRouter 훅 초기화
+
   const handleLoginClick = async () => {
     try {
       // 로그인 API 호출
-      const response = await fetch('/api/user/login', {
-        method: 'POST',
+      const response = await fetch("/api/user/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ userId, password }),
       });
@@ -21,14 +23,14 @@ const LoginButton: React.FC<LoginButtonProps> = ({ userId, password }) => {
       const result = await response.json();
 
       if (response.ok) {
-        alert('로그인 성공!');
-        // 로그인 성공 후 추가 로직 작성 가능
+        alert("로그인 성공!");
+        router.push("/"); // 로그인 성공 시 메인 페이지로 이동
       } else {
         alert(`로그인 실패: ${result.message}`);
       }
     } catch (error) {
-      alert('로그인 중 오류가 발생했습니다.');
-      console.error('로그인 오류:', error);
+      alert("로그인 중 오류가 발생했습니다.");
+      console.error("로그인 오류:", error);
     }
   };
 

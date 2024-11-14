@@ -1,40 +1,34 @@
-"use client";
-
-interface User {
+interface PatientRowProps {
   id: number;
-  userId: string;
   name: string;
   gender: string;
-  birthYear: number;
-  birthMonth: number;
-  birthDay: number;
-  email: string;
-  // 추가적인 필드가 있을 경우 여기에 정의
+  birthDate?: string; // 선택 사항으로 정의 (만약 필요하다면)
+  onSendSurveyLink: (name: string) => void;
+  onViewSurveyResults: (name: string) => void;
 }
 
-interface PatientRowProps {
-  user: User;
-  onSendSurvey: (userId: number) => void;
-  onViewSurveyResults: (userId: number) => void;
-}
-
-const PatientRow: React.FC<PatientRowProps> = ({ user, onSendSurvey, onViewSurveyResults }) => {
+const PatientRow: React.FC<PatientRowProps> = ({
+  id,
+  name,
+  onSendSurveyLink,
+  onViewSurveyResults,
+}) => {
   return (
-    <tr key={user.id}>
-      <td className="border-b py-2 px-4">{user.id}</td>
-      <td className="border-b py-2 px-4">{user.name}</td>
+    <tr>
+      <td className="border-b py-2 px-4">{id}</td>
+      <td className="border-b py-2 px-4">{name}</td>
       <td className="border-b py-2 px-4 text-center">
         <button
-          className="border border-black text-black py-1 px-2 rounded hover:bg-gray-100"
-          onClick={() => onSendSurvey(user.id)}
+          className="bg-black text-white py-1 px-2 rounded hover:bg-gray-800"
+          onClick={() => onSendSurveyLink(name)}
         >
           발송
         </button>
       </td>
       <td className="border-b py-2 px-4 text-center">
         <button
-          className="border border-black text-black py-1 px-2 rounded hover:bg-gray-100"
-          onClick={() => onViewSurveyResults(user.id)}
+          className="bg-white text-black py-1 px-2 rounded border border-black hover:bg-gray-100"
+          onClick={() => onViewSurveyResults(name)}
         >
           보기
         </button>
