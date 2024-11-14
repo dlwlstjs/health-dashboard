@@ -158,7 +158,31 @@ export default function Home() {
       <PatientAddModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)} // 모달 닫기
-        onAddPatient={handleAddPatient} // 환자 추가
+        onAddPatient={async (newPatient) => {
+          try {
+            // 비동기 API 요청 로직 작성
+            const response = await fetch("/api/patients", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(newPatient),
+            });
+        
+            if (!response.ok) {
+              // 서버 응답 상태 코드와 메시지 출력
+              const errorMessage = await response.text();
+              console.error(`환자 추가에 실패했습니다. 상태 코드: ${response.status}, 메시지: ${errorMessage}`);
+              return;
+            }
+        
+            // 성공 시 추가된 환자를 가져오거나 상태 업데이트
+            console.log("환자 추가 성공!");
+          } catch (error) {
+            console.error("API 요청 실패:", error);
+          }
+        }}
+        
       />
 
       {/* 문진 결과 모달 */}

@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 
@@ -23,26 +23,31 @@ export async function GET() {
   }
 }
 
-// POST 요청 처리: 새로운 환자 추가
-export async function POST(req: Request) {
-  try {
-    // 요청 본문에서 필요한 데이터를 가져옵니다.
-    const { name, gender, birthDate, email } = await req.json();
-
-    const db = await openDb();
-    await db.run(
-      'INSERT INTO patient (name, gender, birthYear, birthMonth, birthDay, email) VALUES (?, ?, ?, ?, ?, ?)',
-      name,
-      gender,
-      parseInt(birthDate.split('-')[0]), // birthYear
-      parseInt(birthDate.split('-')[1]), // birthMonth
-      parseInt(birthDate.split('-')[2]), // birthDay
-      email
-    );
-    await db.close();
-    return NextResponse.json({ message: '환자가 성공적으로 추가되었습니다.' }, { status: 201 });
-  } catch (error) {
-    console.error('DB 오류:', error);
-    return NextResponse.json({ error: '환자 추가에 실패했습니다.' }, { status: 500 });
+export async function POST(request: NextRequest) {
+    try {
+      const { name, gender, birthDate, email } = await request.json();
+      const db = await openDb();
+  
+      // 이메일 중복 확인
+      const existingPatient = await db.get(`SELECT * FROM patient WHERE email = ?`, email);
+      if (existingPatient) {
+        return NextResponse.json({ message: '이미 존재하는 이메일입니다.' }, { status: 400 });
+      }
+  
+      await db.run(
+        `INSERT INTO patient (name, gender, birthdate, email, link) VALUES (?, ?, ?, ?, ?)`,
+        name,
+        gender,
+        birthDate,
+        email,
+        `/surveyresult?name=${encodeURIComponent(name)}`
+      );
+      await db.close();
+  
+      return NextResponse.json({ message: '환자 추가 성공!' }, { status: 201 });
+    } catch (error) {
+      console.error('DB 오류:', error);
+      return NextResponse.json({ message: '환자 추가 실패. 서버 오류.' }, { status: 500 });
+    }
   }
-}
+  

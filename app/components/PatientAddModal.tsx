@@ -5,7 +5,8 @@ import React, { useState } from "react";
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddPatient: (newPatient: { name: string; gender: string; birthDate: string; email: string }) => void;
+  // onAddPatient의 반환 타입을 Promise<void>로 수정
+  onAddPatient: (newPatient: { name: string; gender: string; birthDate: string; email: string }) => Promise<void>;
 }
 
 const PatientAddModal: React.FC<ModalProps> = ({ isOpen, onClose, onAddPatient }) => {
@@ -16,20 +17,36 @@ const PatientAddModal: React.FC<ModalProps> = ({ isOpen, onClose, onAddPatient }
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const newPatient = {
       name,
-      gender,
+      gender: gender === '남' ? 'male' : 'female', // 변환
       birthDate,
       email,
     };
-    
-    onAddPatient(newPatient); // 환자 추가 처리
-    onClose(); // 모달 닫기
+  
+    try {
+      const response = await fetch('/api/patients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newPatient),
+      });
+  
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        console.error(`추가 실패: ${errorMessage}`);
+        return;
+      }
+  
+      console.log('환자 추가 성공!');
+      onClose(); // 모달 닫기
+    } catch (error) {
+      console.error('API 요청 오류:', error);
+    }
   };
-
+  
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-8 rounded shadow-lg w-96">
@@ -100,11 +117,10 @@ const PatientAddModal: React.FC<ModalProps> = ({ isOpen, onClose, onAddPatient }
             />
           </div>
 
-          {/* 버튼 섹션: 취소와 추가 버튼 간의 간격을 줄이기 위해 justify-end 사용 */}
           <div className="mt-6 flex justify-end gap-4">
             <button
               type="button"
-              onClick={onClose} // 취소 버튼 클릭 시 모달 닫기
+              onClick={onClose}
               className="bg-gray-500 text-white py-2 px-6 rounded hover:bg-gray-600"
             >
               취소
