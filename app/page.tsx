@@ -57,7 +57,7 @@ export default function Home() {
     };
 
     try {
-      const response = await fetch("/api/patient", {
+      const response = await fetch("/api/patients", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
