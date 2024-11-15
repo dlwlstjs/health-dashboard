@@ -121,13 +121,13 @@ const PatientAddModal: React.FC<ModalProps> = ({ isOpen, onClose, onAddPatient }
             <button
               type="button"
               onClick={onClose}
-              className="bg-gray-500 text-white py-2 px-6 rounded hover:bg-gray-600"
+              className="text-black py-2 px-6 rounded border-2"
             >
               취소
             </button>
             <button
               type="submit"
-              className="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-600"
+              className="bg-black text-white py-2 px-6 rounded hover:bg-black-600"
             >
               추가
             </button>
