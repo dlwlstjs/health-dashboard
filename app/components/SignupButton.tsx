@@ -1,9 +1,5 @@
 import React from "react";
-
-// SignupButton 컴포넌트에 필요한 타입을 정의
-interface SignupButtonProps {
-  onClick: () => void;
-}
+import { SignupButtonProps } from "../types/SignupButtonProps";
 
 const SignupButton: React.FC<SignupButtonProps> = ({ onClick }) => {
   return (

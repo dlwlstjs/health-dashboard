@@ -20,7 +20,7 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
   const [selectedUserName, setSelectedUserName] = useState("");
-  const router = useRouter(); // 'router'는 한 번만 사용
+  const router = useRouter()
 
   const fetchPatients = async () => {
     try {
@@ -28,7 +28,6 @@ export default function Home() {
       if (!response.ok) throw new Error("네트워크 응답이 올바르지 않습니다.");
 
       const data = await response.json();
-      console.log("Fetched Patients:", data); // 확인용
       setUsers(data);
     } catch (error) {
       console.error("데이터를 가져오는데 실패했습니다:", error);
@@ -67,7 +66,7 @@ export default function Home() {
       });
 
       if (response.ok) {
-        // 새로고침을 대신해서 데이터를 다시 불러오는 방식
+        // 새로고침을 대신해서 데이터를 다시 불러오는 방식 -> 실패...
         fetchPatients();
       } else {
         console.error("환자 추가에 실패했습니다.");

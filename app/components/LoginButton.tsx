@@ -1,13 +1,9 @@
 import React from "react";
-import { useRouter } from "next/navigation"; // Next.js의 useRouter 훅 사용
-
-interface LoginButtonProps {
-  userId: string;
-  password: string;
-}
+import { useRouter } from "next/navigation";
+import { LoginButtonProps } from "../types/LoginButtonProps";
 
 const LoginButton: React.FC<LoginButtonProps> = ({ userId, password }) => {
-  const router = useRouter(); // useRouter 훅 초기화
+  const router = useRouter();
 
   const handleLoginClick = async () => {
     try {
@@ -24,7 +20,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({ userId, password }) => {
 
       if (response.ok) {
         alert("로그인 성공!");
-        router.push("/"); // 로그인 성공 시 메인 페이지로 이동
+        router.push("/");
       } else {
         alert(`로그인 실패: ${result.message}`);
       }

@@ -4,14 +4,19 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { SignupFormProps } from "../types/SignupFormProps";
 
 const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth() + 1;
+  const currentDay = today.getDate();
+
   const [formData, setFormData] = useState({
     userId: "",
     password: "",
     name: "",
-    gender: "",
-    birthYear: "",
-    birthMonth: "",
-    birthDay: "",
+    gender: "male",
+    birthYear: currentYear.toString(),
+    birthMonth: currentMonth.toString(),
+    birthDay: currentDay.toString(),
     emailPrefix: "",
   });
 
@@ -58,14 +63,14 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
           password: "",
           name: "",
           gender: "",
-          birthYear: "",
-          birthMonth: "",
-          birthDay: "",
+          birthYear: currentYear.toString(),
+          birthMonth: currentMonth.toString(),
+          birthDay: currentDay.toString(),
           emailPrefix: "",
         });
         onSubmit();
       } else {
-        alert("회원가입 실패: " + (result.error || "서버 응답 확인 필요"));
+        alert((result.error || "서버 응답 확인 필요"));
       }
     } catch (error) {
       console.error("Error:", error);
@@ -73,9 +78,6 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
     }
   };
 
-  // 오늘 날짜를 기준으로 생년월일 드롭다운 값 생성
-  const today = new Date();
-  const currentYear = today.getFullYear();
   const years = Array.from({ length: 100 }, (_, index) => currentYear - index);
   const months = Array.from({ length: 12 }, (_, index) => index + 1);
   const days: number[] = Array.from({ length: 31 }, (_, index) => index + 1);
@@ -85,7 +87,6 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
       onSubmit={handleSubmit}
       className="flex flex-col gap-4 w-full max-w-4xl mx-auto"
     >
-      {/* 아이디 입력 */}
       <div className="flex flex-col gap-2">
         <label className="text-sm sm:text-base">아이디</label>
         <input
@@ -98,8 +99,6 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
           required
         />
       </div>
-
-      {/* 비밀번호 입력 및 숨기기/보이기 */}
       <div className="flex flex-col gap-2">
         <label className="text-sm sm:text-base">비밀번호</label>
         <div className="flex items-center">
@@ -118,15 +117,13 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
             className="ml-2 text-black"
           >
             {showPassword ? (
-              <VisibilityIcon /> // 비밀번호 보이기 아이콘
+              <VisibilityIcon />
             ) : (
-              <VisibilityOffIcon /> // 비밀번호 숨기기 아이콘
+              <VisibilityOffIcon />
             )}
           </button>
         </div>
       </div>
-
-      {/* 이름 입력 */}
       <div className="flex flex-col gap-2">
         <label className="text-sm sm:text-base">이름</label>
         <input
@@ -139,8 +136,6 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
           required
         />
       </div>
-
-      {/* 성별 입력 (라디오 버튼) */}
       <div className="flex flex-col gap-2">
         <label className="text-sm sm:text-base">성별</label>
         <div className="flex gap-4">
@@ -174,8 +169,6 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
           </div>
         </div>
       </div>
-
-      {/* 생년월일 드롭다운 */}
       <div className="flex flex-col gap-2">
         <label className="text-sm sm:text-base">생년월일</label>
         <div className="flex gap-4">
@@ -229,8 +222,6 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
           </div>
         </div>
       </div>
-
-      {/* 이메일 입력 */}
       <div className="flex flex-col gap-2">
         <label className="text-sm sm:text-base">이메일</label>
         <div className="flex gap-2 mt-0">
@@ -245,8 +236,6 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
           />
         </div>
       </div>
-
-      {/* 가입하기 버튼 */}
       <button
         type="submit"
         className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-6 sm:min-w-44"

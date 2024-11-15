@@ -1,4 +1,3 @@
-// app/components/SurveyResultModal.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -46,8 +45,6 @@ const SurveyResultModal: React.FC<SurveyResultModalProps> = ({ isOpen, onClose, 
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="relative bg-white p-8 rounded shadow-lg w-96">
         <h2 className="text-xl font-semibold mb-4">{userName} 님 문진 결과</h2>
-
-        {/* 문진 결과 내용 표시 */}
         <div className="mb-4">
           <p>{surveyResult || "문진 결과 내용이 여기에 표시됩니다."}</p>
         </div>

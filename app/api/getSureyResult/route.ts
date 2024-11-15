@@ -1,23 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
-
-// 데이터베이스 열기 함수
-async function openDb() {
-    return open({
-      filename: './database.sqlite', // 데이터베이스 파일 위치
-      driver: sqlite3.Database,
-    });
-  }
+import { openDb } from '@/app/db/sqlite';
 
 export async function POST(req: NextRequest) {
   const { userName } = await req.json();
   
-  // SQLite 데이터베이스 연결
   const db = await openDb();
   
   try {
-    // 해당 사용자의 문진 결과를 가져오기
+    // 환자의 문진 결과를 가져오기
     const result = db.prepare('SELECT * FROM survey_results WHERE name = ?').get(userName);
 
     if (result) {
