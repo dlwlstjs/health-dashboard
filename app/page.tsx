@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PatientAddModal from "@/app/components/PatientAddModal";
@@ -17,31 +16,70 @@ interface User {
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
-  const [isClient, setIsClient] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
   const [selectedUserName, setSelectedUserName] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // 로그인 상태 관리
   const router = useRouter();
 
   useEffect(() => {
-    setIsClient(true);
-    fetchPatients();
-  }, []);
+    const checkAuthentication = async () => {
+      try {
+        const response = await fetch("/api/auth/verify", {
+          method: "GET",
+          credentials: "include", // 쿠키를 포함하여 요청
+        });
+
+        const data = await response.json();
+
+        if (data.authenticated) {
+          setIsAuthenticated(true);
+          fetchPatients(); // 로그인 되어 있으면 환자 목록을 불러옴
+        } else {
+          router.push("/login"); // 로그인되지 않았다면 로그인 페이지로 리디렉션
+        }
+      } catch (error) {
+        console.error("인증 상태 확인 오류:", error);
+        router.push("/login"); // 오류가 발생하면 로그인 페이지로 리디렉션
+      }
+    };
+
+    checkAuthentication();
+  }, [router]);
 
   const fetchPatients = async () => {
     try {
-      const response = await fetch("/api/patients");
-      if (!response.ok) throw new Error("네트워크 응답이 올바르지 않습니다.");
+      const response = await fetch("/api/patients", {
+        method: "GET",
+        credentials: "include", // 쿠키 포함
+      });
 
       const data = await response.json();
       setUsers(data);
     } catch (error) {
-      console.error("데이터를 가져오는데 실패했습니다:", error);
+      console.error("환자 목록을 가져오는 데 실패했습니다:", error);
     }
   };
 
-  const handleLogout = () => {
-    router.push("/login");
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/user/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        alert("로그아웃 성공!");
+        router.push("/login");
+      } else {
+        alert("로그아웃 실패");
+      }
+    } catch (error) {
+      console.error("로그아웃 오류:", error);
+      alert("로그아웃 중 오류가 발생했습니다.");
+    }
   };
 
   const handleAddPatient = async (newPatient: {
@@ -68,7 +106,7 @@ export default function Home() {
       });
 
       if (response.ok) {
-        fetchPatients(); // 데이터를 다시 불러오기
+        fetchPatients();
       } else {
         console.error("환자 추가에 실패했습니다.");
       }
@@ -106,7 +144,7 @@ export default function Home() {
     setIsSurveyModalOpen(false);
   };
 
-  if (!isClient) return null;
+  if (!isAuthenticated) return null; // 인증되지 않았으면 아무것도 렌더링하지 않음
 
   return (
     <div className="min-h-screen p-8 sm:p-20 flex justify-center items-start mt-20">
