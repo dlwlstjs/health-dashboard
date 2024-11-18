@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+
+import React, { useState, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const QUESTIONS = [
   "걷는 데 어려움이 있나요?",
@@ -15,20 +16,22 @@ type AnswerState = {
   [key: string]: string;
 };
 
-export default function Survey() {
+function SurveyContent() {
   const [answers, setAnswers] = useState<AnswerState>({});
   const [isCompleted, setIsCompleted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const searchParams = useSearchParams();
-  const name = searchParams.get("name");
+  const name = searchParams.get("name") || "이름 없음";
   const router = useRouter();
 
   const handleRadioChange = (question: string, value: string) => {
     setAnswers((prevAnswers) => ({ ...prevAnswers, [question]: value }));
+    setErrorMessage(null); // 질문이 변경될 때 에러 메시지 초기화
   };
 
   const handleSubmit = async () => {
-    if (Object.values(answers).length < QUESTIONS.length) {
-      alert("모든 질문에 답변을 완료해야 합니다.");
+    if (Object.keys(answers).length < QUESTIONS.length) {
+      setErrorMessage("모든 질문에 답변을 완료해야 합니다.");
       return;
     }
 
@@ -39,9 +42,17 @@ export default function Survey() {
         body: JSON.stringify({ name, answers }),
       });
 
-      response.ok ? setIsCompleted(true) : alert("문진 결과 저장에 실패했습니다.");
+      if (!response.ok) {
+        const responseText = await response.text();
+        console.error("문진 결과 저장 오류:", responseText);
+        setErrorMessage("문진 결과 저장에 실패했습니다. 다시 시도해주세요.");
+        return;
+      }
+
+      setIsCompleted(true);
     } catch (error) {
       console.error("문진 결과 저장 오류:", error);
+      setErrorMessage("서버 오류로 문진 결과 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
     }
   };
 
@@ -49,19 +60,20 @@ export default function Survey() {
     <div className="min-h-screen flex justify-center items-center bg-gray-100">
       <div className="w-full max-w-3xl bg-white p-10 rounded-lg shadow-xl">
         <h1 className="text-3xl font-bold mb-8 text-center">{name} 님의 사전 문진 항목</h1>
-        
+
         {QUESTIONS.map((question, index) => (
           <div key={index} className="mb-6">
             <p className="mb-6">{index + 1}. {question}</p>
             <div className="flex justify-center gap-12">
               {OPTIONS.map((option) => (
-                <label key={option}>
+                <label key={option} className="flex items-center">
                   <input
                     type="radio"
                     name={`question${index + 1}`}
                     value={option}
                     checked={answers[`question${index + 1}`] === option}
                     onChange={() => handleRadioChange(`question${index + 1}`, option)}
+                    className="mr-2"
                   />
                   {option}
                 </label>
@@ -70,8 +82,19 @@ export default function Survey() {
           </div>
         ))}
 
+        {errorMessage && (
+          <div className="text-red-500 text-center mt-4">
+            {errorMessage}
+          </div>
+        )}
+
         <div className="mt-8 flex justify-center">
-          <button onClick={handleSubmit} className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-6 sm:min-w-44">완료</button>
+          <button
+            onClick={handleSubmit}
+            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-black text-white gap-2 hover:bg-gray-800 text-sm sm:text-base h-10 sm:h-12 px-6 sm:min-w-44"
+          >
+            완료
+          </button>
         </div>
       </div>
 
@@ -80,11 +103,24 @@ export default function Survey() {
           <div className="bg-white p-16 rounded-lg shadow-xl text-center max-w-lg">
             <h2 className="text-2xl font-semibold mb-6">문진을 완료했습니다!</h2>
             <div className="flex justify-center mt-10">
-              <button onClick={() => router.push("/")} className="rounded-full ...">확인</button>
+              <button
+                onClick={() => router.push("/")}
+                className="rounded-full bg-black text-white px-8 py-3"
+              >
+                확인
+              </button>
             </div>
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+export default function SurveyPage() {
+  return (
+    <Suspense fallback={<div>로딩 중...</div>}>
+      <SurveyContent />
+    </Suspense>
   );
 }

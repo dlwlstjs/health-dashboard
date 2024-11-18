@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // 'useRouter'는 한 번만 사용해야 합니다.
+import { useRouter } from "next/navigation";
 import PatientAddModal from "@/app/components/PatientAddModal";
 import SurveyResultModal from "@/app/components/SurveyResultModal";
 
@@ -17,10 +17,16 @@ interface User {
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
+  const [isClient, setIsClient] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
   const [selectedUserName, setSelectedUserName] = useState("");
-  const router = useRouter()
+  const router = useRouter();
+
+  useEffect(() => {
+    setIsClient(true);
+    fetchPatients();
+  }, []);
 
   const fetchPatients = async () => {
     try {
@@ -33,10 +39,6 @@ export default function Home() {
       console.error("데이터를 가져오는데 실패했습니다:", error);
     }
   };
-
-  useEffect(() => {
-    fetchPatients();
-  }, []);
 
   const handleLogout = () => {
     router.push("/login");
@@ -66,8 +68,7 @@ export default function Home() {
       });
 
       if (response.ok) {
-        // 새로고침을 대신해서 데이터를 다시 불러오는 방식 -> 실패...
-        fetchPatients();
+        fetchPatients(); // 데이터를 다시 불러오기
       } else {
         console.error("환자 추가에 실패했습니다.");
       }
@@ -104,6 +105,8 @@ export default function Home() {
   const handleCloseSurveyModal = () => {
     setIsSurveyModalOpen(false);
   };
+
+  if (!isClient) return null;
 
   return (
     <div className="min-h-screen p-8 sm:p-20 flex justify-center items-start mt-20">

@@ -3,13 +3,24 @@ import React, { useState } from "react";
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAddPatient: (newPatient: { name: string; gender: string; birthDate: string; email: string }) => Promise<void>;
+  onAddPatient: (newPatient: {
+    name: string;
+    gender: string;
+    birthDate: string;
+    email: string;
+  }) => Promise<void>;
 }
 
-const PatientAddModal: React.FC<ModalProps> = ({ isOpen, onClose, onAddPatient }) => {
+const PatientAddModal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  onAddPatient,
+}) => {
   const [name, setName] = useState("");
   const [gender, setGender] = useState("남");
-  const [birthDate, setBirthDate] = useState(new Date().toISOString().split("T")[0]);
+  const [birthDate, setBirthDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null); // 에러 상태 추가
 
@@ -25,10 +36,10 @@ const PatientAddModal: React.FC<ModalProps> = ({ isOpen, onClose, onAddPatient }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const newPatient = {
       name,
-      gender: gender === '남' ? 'male' : 'female',
+      gender: gender === "남" ? "male" : "female",
       birthDate,
       email,
     };
@@ -52,11 +63,9 @@ const PatientAddModal: React.FC<ModalProps> = ({ isOpen, onClose, onAddPatient }
         >
           &times;
         </button>
-
         <h2 className="text-xl font-bold mb-4">환자 추가</h2>
-
-        {error && <div className="text-red-500 mb-4">{error}</div>} {/* 에러 메시지 출력 */}
-
+        {error && <div className="text-red-500 mb-4">{error}</div>}{" "}
+        {/* 에러 메시지 출력 */}
         <form onSubmit={handleSubmit}>
           <div>
             <label className="block mb-2">이름</label>
@@ -116,18 +125,17 @@ const PatientAddModal: React.FC<ModalProps> = ({ isOpen, onClose, onAddPatient }
               required
             />
           </div>
-
           <div className="mt-6 flex justify-end gap-4">
             <button
               type="button"
               onClick={onClose}
-              className="text-black py-2 px-6 rounded border-2"
+              className="text-black py-2 px-6 rounded border-2 border-gray-300 hover:bg-gray-100"
             >
               취소
             </button>
             <button
               type="submit"
-              className="bg-black text-white py-2 px-6 rounded hover:bg-black-600"
+              className="bg-black text-white py-2 px-6 rounded hover:bg-gray-800"
             >
               추가
             </button>
