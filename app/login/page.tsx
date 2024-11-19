@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지를 관리하는 상태
   const router = useRouter();
 
   const handleSignupClick = () => {
@@ -31,48 +32,59 @@ export default function LoginPage() {
             />
           </div>
           <div className="flex flex-col gap-4 mt-12 mb-12">
-            <div className="flex items-center gap-2 justify-end">
-              <div>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2 justify-end">
                 <label className="text-sm sm:text-base font-[family-name:var(--font-geist-mono)]">
                   ID:
                 </label>
+                <input
+                  type="text"
+                  className="border border-gray-300 rounded h-10 sm:h-12 px-2"
+                  placeholder="ID를 입력하세요"
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value)}
+                />
+                <div className="w-6 h-6"></div>
               </div>
-              <input
-                type="text"
-                className="border border-gray-300 rounded h-10 sm:h-12 px-2"
-                placeholder="ID를 입력하세요"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
-              />
-              <div className="w-6 h-6"></div>
             </div>
-            <div className="flex items-center gap-2 justify-end">
-              <div>
+
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2 justify-end">
                 <label className="text-sm sm:text-base font-[family-name:var(--font-geist-mono)]">
                   PASSWORD:
                 </label>
+                <div className="flex items-center">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="border border-gray-300 rounded h-10 sm:h-12 px-2"
+                    placeholder="비밀번호를 입력하세요"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="ml-2 text-black"
+                  >
+                    {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="border border-gray-300 rounded h-10 sm:h-12 px-2"
-                  placeholder="비밀번호를 입력하세요"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  className="ml-2 text-black"
-                >
-                  {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                </button>
-              </div>
+          {/* 로그인 실패 메시지 */}
+          {errorMessage && (
+            <div className="text-red-500 text-sm sm:text-base text-center mb-4">
+              {errorMessage}
+            </div>
+          )}
             </div>
           </div>
 
           <div className="flex gap-4 items-center flex-col sm:flex-row">
-            <LoginButton userId={userId} password={password} />
+            <LoginButton
+              userId={userId}
+              password={password}
+              setErrorMessage={setErrorMessage} // 에러 메시지 전달
+            />
             <SignupButton onClick={handleSignupClick} />
           </div>
         </div>
