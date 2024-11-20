@@ -2,7 +2,9 @@
 
 import React, { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { SCORE_MAP, Answer } from "@/scoreMap"; // scoreMap.ts에서 SCORE_MAP 임포트
 
+// 질문과 답변 옵션
 const QUESTIONS = [
   "걷는 데 어려움이 있나요?",
   "혼자 씻거나 옷을 입을 때 어려움이 있나요?",
@@ -13,7 +15,7 @@ const QUESTIONS = [
 const OPTIONS = ["전혀없다", "약간있다", "많이있다"];
 
 type AnswerState = {
-  [key: string]: string;
+  [key: string]: Answer;
 };
 
 function SurveyContent() {
@@ -24,7 +26,7 @@ function SurveyContent() {
   const name = searchParams.get("name") || "이름 없음";
   const router = useRouter();
 
-  const handleRadioChange = (question: string, value: string) => {
+  const handleRadioChange = (question: string, value: Answer) => {
     setAnswers((prevAnswers) => ({ ...prevAnswers, [question]: value }));
     setErrorMessage(null); // 질문이 변경될 때 에러 메시지 초기화
   };
@@ -35,11 +37,17 @@ function SurveyContent() {
       return;
     }
 
+    // answers를 기반으로 점수 계산
+    const score = QUESTIONS.reduce((total, question) => {
+      const answer = answers[question];
+      return total + (answer ? SCORE_MAP[answer] : 0);
+    }, 0);
+
     try {
       const response = await fetch("/api/surveyresult", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, answers }),
+        body: JSON.stringify({ name, answers, score }), // score 포함
       });
 
       if (!response.ok) {
@@ -72,10 +80,10 @@ function SurveyContent() {
                     name={`question${index + 1}`}
                     value={option}
                     checked={answers[`question${index + 1}`] === option}
-                    onChange={() => handleRadioChange(`question${index + 1}`, option)}
-                    className="mr-2"
+                    onChange={() => handleRadioChange(`question${index + 1}`, option as Answer)}
+                    className="mr-2 peer" // peer 추가
                   />
-                  {option}
+                  <span className="peer-checked:text-black">{option}</span> {/* peer-checked 사용 */}
                 </label>
               ))}
             </div>

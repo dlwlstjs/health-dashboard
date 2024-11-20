@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { openDb } from '@/app/db/sqlite';
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   const { userName } = await req.json();
   
   const db = await openDb();
