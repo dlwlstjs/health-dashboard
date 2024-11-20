@@ -184,7 +184,7 @@ export default function Home() {
             </thead>
             <tbody>
               {users.map((user, index) => (
-                <tr key={user.email}>
+                <tr key={user.name}>
                   <td className="border-b py-2 px-4">{index + 1}</td>
                   <td className="border-b py-2 px-4">{user.name}</td>
                   <td className="border-b py-2 px-4 text-center">
