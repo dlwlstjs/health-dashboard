@@ -157,13 +157,13 @@ function SurveyContent() {
       {isSurveyDone && (
         <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50">
           <div className="bg-white p-16 rounded-lg shadow-xl text-center max-w-lg">
-            <h2 className="text-2xl font-semibold mb-6">
-              이미 문진을 완료했습니다!
+            <h2 className="text-2xl font-semibold mb-6 text-red-500">
+              이미 완료된 문진입니다
             </h2>
-            <div className="flex justify-center mt-10">
+            <div className="flex justify-center mt-100">
               <button
                 onClick={() => window.close()} // 창 닫기
-                className="rounded-full bg-black text-white px-8 py-3 hover:bg-gray-800 transition-colors"
+                className="rounded-full bg-black text-white px-8 py-3"
               >
                 닫기
               </button>
