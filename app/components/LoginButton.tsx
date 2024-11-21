@@ -1,10 +1,5 @@
 import React from "react";
-
-interface LoginButtonProps {
-  userId: string;
-  password: string;
-  setErrorMessage: (message: string) => void;
-}
+import { LoginButtonProps } from "../types/LoginButtonProps";
 
 const LoginButton: React.FC<LoginButtonProps> = ({
   userId,
@@ -27,7 +22,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ userId, password }),
-        credentials: "include", // 쿠키 포함
+        credentials: "include",
       });
 
       const result = await response.json();

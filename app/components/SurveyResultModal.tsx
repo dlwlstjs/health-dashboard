@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-
-interface SurveyResultModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  email: string;
-  name: string;
-}
-
+import { SurveyResultModalProps } from "../types/SurveyResultModalProps";
 const QUESTIONS = [
   "걷는 데 어려움이 있나요?",
   "혼자 씻거나 옷을 입을 때 어려움이 있나요?",

@@ -1,4 +1,5 @@
 export interface LoginButtonProps {
-    userId: string;
-    password: string;
-  }
+  userId: string;
+  password: string;
+  setErrorMessage: (message: string) => void;
+}

@@ -3,24 +3,15 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PatientAddModal from "@/app/components/PatientAddModal";
 import SurveyResultModal from "@/app/components/SurveyResultModal";
-
-interface User {
-  id: number;
-  name: string;
-  gender: string;
-  birthYear: number;
-  birthMonth: number;
-  birthDay: number;
-  email: string;
-}
+import { User } from "./types/user";
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<{ email: string; name: string } | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // 로그인 상태 관리
-  const [doctorId, setDoctorId] = useState<number | null>(null); // doctor_id 저장
+  const [isAuthenticated, setIsAuthenticated] = useState(false); //로그인 상태 관리
+  const [doctorId, setDoctorId] = useState<number | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -28,14 +19,14 @@ export default function Home() {
       try {
         const response = await fetch("/api/auth/verify", {
           method: "GET",
-          credentials: "include", // 쿠키를 포함하여 요청
+          credentials: "include",
         });
 
         const data = await response.json();
 
         if (data.authenticated) {
           setIsAuthenticated(true);
-          setDoctorId(data.user.id); // doctor_id 저장
+          setDoctorId(data.user.id); // doctorId 저장
           fetchPatients(); // 로그인 되어 있으면 환자 목록을 불러옴
         } else {
           router.push("/login"); // 로그인되지 않았다면 로그인 페이지로 리디렉션
@@ -112,7 +103,7 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...newUser, doctor_id: doctorId }), // doctor_id 포함
+        body: JSON.stringify({ ...newUser, doctor_id: doctorId }),
       });
 
       if (response.ok) {

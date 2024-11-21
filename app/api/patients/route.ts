@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { openDb } from "@/app/db/sqlite";
-
-interface DecodedToken {
-  userId: number;
-  iat: number;
-  exp: number;
-}
+import { DecodedToken } from "@/app/types/DecodedTokenProps";
 
 // GET: 특정 doctor_id에 해당하는 환자 목록 가져오기
 export async function GET(req: NextRequest) {

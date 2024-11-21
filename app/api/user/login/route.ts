@@ -1,17 +1,8 @@
 import { NextResponse } from 'next/server';
 import { openDb } from '@/app/db/sqlite';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt'; // bcrypt 라이브러리 사용
-
-interface Doctor {
-  id: number;
-  name: string;
-  gender: string;
-  birthdate: string;
-  email: string;
-  username: string;
-  password: string;
-}
+import bcrypt from 'bcrypt';
+import { Doctor } from '@/app/types/DoctorProps';
 
 // 서버에서만 사용되는 비밀키 환경변수
 const secretKey = process.env.NEXT_SECRET_KEY;
