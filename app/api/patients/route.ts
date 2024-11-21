@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { openDb } from "@/app/db/sqlite";
 
+interface DecodedToken {
+  userId: number;
+  iat: number;
+  exp: number;
+}
+
 // GET: 특정 doctor_id에 해당하는 환자 목록 가져오기
 export async function GET(req: NextRequest) {
   const token = req.cookies.get("auth-token")?.value;
@@ -14,7 +20,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const decoded: any = jwt.verify(token, process.env.NEXT_SECRET_KEY as string);
+    const decoded = jwt.verify(token, process.env.NEXT_SECRET_KEY as string) as DecodedToken;
     const doctorId = decoded.userId; // 토큰의 doctor_id
     console.log("get의 doctor_id : ",decoded.userId);
     
@@ -47,7 +53,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const decoded: any = jwt.verify(token, process.env.NEXT_SECRET_KEY as string);
+    const decoded = jwt.verify(token, process.env.NEXT_SECRET_KEY as string) as DecodedToken;
     const doctorId = decoded.userId; // 토큰의 doctor_id
     console.log("POST 요청의 doctor_id:", doctorId);
 
