@@ -18,7 +18,7 @@ export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
-  const [selectedUserName, setSelectedUserName] = useState("");
+  const [selectedUser, setSelectedUser] = useState<{ email: string; name: string } | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false); // 로그인 상태 관리
   const router = useRouter();
 
@@ -115,8 +115,8 @@ export default function Home() {
     }
   };
 
-  const handleViewSurveyResults = (userName: string) => {
-    setSelectedUserName(userName);
+  const handleViewSurveyResults = (user: User) => {
+    setSelectedUser({ email: user.email, name: user.name }); // email과 name 저장
     setIsSurveyModalOpen(true);
   };
 
@@ -184,7 +184,7 @@ export default function Home() {
             </thead>
             <tbody>
               {users.map((user, index) => (
-                <tr key={user.name}>
+                <tr key={user.email}>
                   <td className="border-b py-2 px-4">{index + 1}</td>
                   <td className="border-b py-2 px-4">{user.name}</td>
                   <td className="border-b py-2 px-4 text-center">
@@ -198,7 +198,7 @@ export default function Home() {
                   <td className="border-b py-2 px-4 text-center">
                     <button
                       className="bg-white text-black py-1 px-2 rounded border border-black hover:bg-gray-100"
-                      onClick={() => handleViewSurveyResults(user.name)}
+                      onClick={() => handleViewSurveyResults(user)} // user 전달
                     >
                       보기
                     </button>
@@ -216,11 +216,14 @@ export default function Home() {
         onAddPatient={handleAddPatient}
       />
 
-      <SurveyResultModal
-        isOpen={isSurveyModalOpen}
-        onClose={handleCloseSurveyModal}
-        userName={selectedUserName}
-      />
+      {selectedUser && (
+        <SurveyResultModal
+          isOpen={isSurveyModalOpen}
+          onClose={handleCloseSurveyModal}
+          email={selectedUser.email} // email 전달
+          name={selectedUser.name} // name 전달
+        />
+      )}
     </div>
   );
 }

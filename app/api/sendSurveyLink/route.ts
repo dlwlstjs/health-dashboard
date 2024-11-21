@@ -1,15 +1,29 @@
 import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
+import sqlite3 from "sqlite3";
+
+// SQLite 연결
+const db = new sqlite3.Database('./database.sqlite');
 
 // 토큰 생성 함수
-function generateSignedToken(): string {
+function generateSignedToken(patientInfo: {
+  email: string;
+  name: string;
+  gender: string;
+  birthdate: string;
+  link?: string;
+  doctor?: string;
+}): string {
   const secret = process.env.SECRET_KEY as string; // 환경 변수에서 비밀 키 가져오기
   const timestamp = Math.floor(Date.now() / 1000); // 현재 타임스탬프
-  const data = `${timestamp}`; // 데이터 포맷: "timestamp"
+  const data = {
+    ...patientInfo,
+    timestamp,
+  };
 
   const hmac = crypto.createHmac("sha256", secret);
-  hmac.update(data);
+  hmac.update(JSON.stringify(data)); // 객체를 문자열로 변환하여 해시값 생성
 
   const token = hmac.digest("hex");
   return `${timestamp}.${token}`; // "timestamp.hash" 형태로 반환
@@ -17,7 +31,7 @@ function generateSignedToken(): string {
 
 export async function POST(request: Request) {
   try {
-    const { email, name } = await request.json();
+    const { email, name, gender, birthdate } = await request.json();
 
     if (!email || !name) {
       return NextResponse.json({ message: "이메일 또는 이름이 필요합니다." }, { status: 400 });
@@ -27,9 +41,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "이메일 환경 변수가 설정되지 않았습니다." }, { status: 500 });
     }
 
+    // 환자 정보 객체 생성
+    const patientInfo = { email, name, gender, birthdate };
+
     // 토큰 생성
-    const token = generateSignedToken();
-    const surveyLink = `http://localhost:3000/survey?name=${encodeURIComponent(name)}&token=${token}`;
+    const token = generateSignedToken(patientInfo);
+    const surveyLink = `http://localhost:3000/survey?token=${token}`;  // 이름 파라미터 제거
+
+    // 환자 테이블에서 해당 이메일의 link 필드 업데이트
+    db.run(
+      "UPDATE patient SET link = ? WHERE email = ?",
+      [surveyLink, email],
+      function (err) {
+        if (err) {
+          console.error("환자 정보 업데이트 중 오류:", err.message);
+          return NextResponse.json({ message: "환자 정보 업데이트 실패" }, { status: 500 });
+        }
+      }
+    );
 
     // 이메일 전송 설정
     const transporter = nodemailer.createTransport({

@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { SCORE_MAP, Answer } from "@/scoreMap"; // scoreMap.ts에서 SCORE_MAP 임포트
 
-// 질문과 답변 옵션
 const QUESTIONS = [
   "걷는 데 어려움이 있나요?",
   "혼자 씻거나 옷을 입을 때 어려움이 있나요?",
@@ -12,6 +11,7 @@ const QUESTIONS = [
   "통증이나 불편감이 있나요?",
   "불안감이나 우울감이 있나요?",
 ];
+
 const OPTIONS = ["전혀없다", "약간있다", "많이있다"];
 
 type AnswerState = {
@@ -22,13 +22,47 @@ function SurveyContent() {
   const [answers, setAnswers] = useState<AnswerState>({});
   const [isCompleted, setIsCompleted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [name, setName] = useState<string>("이름 없음");
   const searchParams = useSearchParams();
-  const name = searchParams.get("name") || "이름 없음";
+  const token = searchParams.get("token"); // URL에서 token 추출
   const router = useRouter();
+
+  // 서버에서 토큰 검증 및 이름 가져오기
+  const fetchNameFromToken = async (token: string) => {
+    try {
+      const response = await fetch(`/api/verifyToken?token=${token}`);
+
+      if (!response.ok) {
+        console.error(`HTTP 오류: ${response.status}`);
+        setErrorMessage("유효하지 않은 토큰이거나 서버 오류입니다.");
+        return;
+      }
+
+      const data = await response.json();
+
+      // 받아온 데이터 로그로 출력
+      console.log("서버 응답 데이터:", data);
+
+      if (data.name) {
+        setName(data.name);
+      } else {
+        setErrorMessage("유효하지 않은 토큰입니다.");
+      }
+    } catch (error) {
+      console.error("토큰 검증 오류:", error);
+      setErrorMessage("유효하지 않은 토큰이거나 서버 오류입니다.");
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      fetchNameFromToken(token);
+    }
+  }, [token]);
 
   const handleRadioChange = (question: string, value: Answer) => {
     setAnswers((prevAnswers) => ({ ...prevAnswers, [question]: value }));
-    setErrorMessage(null); // 질문이 변경될 때 에러 메시지 초기화
+    setErrorMessage(null);
   };
 
   const handleSubmit = async () => {
@@ -37,22 +71,21 @@ function SurveyContent() {
       return;
     }
 
-    // answers를 기반으로 점수 계산
-    const score = QUESTIONS.reduce((total, question) => {
+    const scoreArray = QUESTIONS.map((question) => {
       const answer = answers[question];
-      return total + (answer ? SCORE_MAP[answer] : 0);
-    }, 0);
+      return answer ? SCORE_MAP[answer] : 0;
+    });
+
+    const scoreString = scoreArray.join(",");
 
     try {
-      const response = await fetch("/api/surveyresult", {
+      const response = await fetch("/api/survey", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, answers, score }), // score 포함
+        body: JSON.stringify({ name, answers, score: scoreString, token }),
       });
 
       if (!response.ok) {
-        const responseText = await response.text();
-        console.error("문진 결과 저장 오류:", responseText);
         setErrorMessage("문진 결과 저장에 실패했습니다. 다시 시도해주세요.");
         return;
       }
@@ -81,9 +114,9 @@ function SurveyContent() {
                     value={option}
                     checked={answers[`question${index + 1}`] === option}
                     onChange={() => handleRadioChange(`question${index + 1}`, option as Answer)}
-                    className="mr-2 peer" // peer 추가
+                    className="mr-2 peer"
                   />
-                  <span className="peer-checked:text-black">{option}</span> {/* peer-checked 사용 */}
+                  <span className="peer-checked:text-black">{option}</span>
                 </label>
               ))}
             </div>
