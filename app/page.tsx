@@ -20,6 +20,7 @@ export default function Home() {
   const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<{ email: string; name: string } | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false); // 로그인 상태 관리
+  const [doctorId, setDoctorId] = useState<number | null>(null); // doctor_id 저장
   const router = useRouter();
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export default function Home() {
 
         if (data.authenticated) {
           setIsAuthenticated(true);
+          setDoctorId(data.user.id); // doctor_id 저장
           fetchPatients(); // 로그인 되어 있으면 환자 목록을 불러옴
         } else {
           router.push("/login"); // 로그인되지 않았다면 로그인 페이지로 리디렉션
@@ -51,13 +53,21 @@ export default function Home() {
     try {
       const response = await fetch("/api/patients", {
         method: "GET",
-        credentials: "include", // 쿠키 포함
+        credentials: "include", // 쿠키 인증 포함
       });
-
+  
       const data = await response.json();
-      setUsers(data);
+  
+      // 데이터가 배열인지 확인
+      if (Array.isArray(data)) {
+        setUsers(data); // 배열일 경우만 설정
+      } else {
+        console.error("API에서 올바르지 않은 데이터 형식 반환:", data);
+        setUsers([]); // 기본값으로 빈 배열 설정
+      }
     } catch (error) {
       console.error("환자 목록을 가져오는 데 실패했습니다:", error);
+      setUsers([]); // 실패 시 빈 배열 설정
     }
   };
 
@@ -102,7 +112,7 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newUser),
+        body: JSON.stringify({ ...newUser, doctor_id: doctorId }), // doctor_id 포함
       });
 
       if (response.ok) {
@@ -129,9 +139,9 @@ export default function Home() {
         },
         body: JSON.stringify({ email: user.email, name: user.name }),
       });
-  
+
       const result = await response.json();
-  
+
       if (response.ok) {
         alert(`${user.name}님에게 문진 링크가 발송되었습니다.`);
       } else {
