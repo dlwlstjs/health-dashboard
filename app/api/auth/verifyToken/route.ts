@@ -46,8 +46,6 @@ export async function POST(request: Request) {
     // 복호화 작업
     const data = decryptEncryptedToken(token);
 
-    console.log("복호화된 데이터:", data); // 디버깅용 로그
-
     return NextResponse.json({ message: "토큰 검증 성공", data }, { status: 200 });
   } catch (error) {
     console.error("복호화 중 오류:", error);

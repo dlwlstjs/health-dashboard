@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { SCORE_MAP, Answer } from "@/scoreMap"; // scoreMap.ts에서 SCORE_MAP 임포트
+import { SCORE_MAP, Answer } from "@/scoreMap";
 
 const QUESTIONS = [
   "걷는 데 어려움이 있나요?",
@@ -21,11 +21,12 @@ type AnswerState = {
 function SurveyContent() {
   const [answers, setAnswers] = useState<AnswerState>({});
   const [isCompleted, setIsCompleted] = useState(false);
+  const [isSurveyDone, setIsSurveyDone] = useState(false); // 이미 문진 완료 여부
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [name, setName] = useState<string>("이름 없음");
   const [email, setEmail] = useState<string | null>(null);
   const searchParams = useSearchParams();
-  const token = searchParams.get("token"); // URL에서 token 추출
+  const token = searchParams.get("token");
   const router = useRouter();
 
   // 서버에서 토큰 검증 및 데이터 가져오기
@@ -44,7 +45,6 @@ function SurveyContent() {
       }
 
       const data = await response.json();
-      console.log("서버 응답 데이터:", data);
 
       if (data?.data?.name && data?.data?.email) {
         setName(data.data.name);
@@ -86,8 +86,15 @@ function SurveyContent() {
       const response = await fetch("/api/survey", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, answers, score: scoreString, token }),
+        body: JSON.stringify({ email, answers }),
       });
+
+      const data = await response.json();
+
+      if (response.status === 400 && data.message === "이미 문진을 완료했습니다.") {
+        setIsSurveyDone(true); // 이미 문진 완료 상태로 설정
+        return;
+      }
 
       if (!response.ok) {
         setErrorMessage("문진 결과 저장에 실패했습니다. 다시 시도해주세요.");
@@ -100,6 +107,22 @@ function SurveyContent() {
       setErrorMessage("서버 오류로 문진 결과 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
     }
   };
+
+  if (isSurveyDone) {
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-gray-100">
+        <div className="w-full max-w-3xl bg-white p-10 rounded-lg shadow-xl text-center">
+          <h1 className="text-3xl font-bold mb-8 text-center">이미 문진을 완료했습니다</h1>
+          <button
+            onClick={() => router.push("/")}
+            className="rounded-full bg-black text-white px-8 py-3"
+          >
+            홈으로 돌아가기
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100">
