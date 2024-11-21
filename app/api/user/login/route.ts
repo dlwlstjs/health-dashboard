@@ -38,9 +38,6 @@ export async function POST(req: Request) {
       // JWT 생성 시 secretKey를 string으로 단언
       const token = jwt.sign(payload, secretKey as string, { expiresIn: '1h' });
 
-      // 로그: 토큰이 잘 생성되었는지 확인
-      console.log('Generated token:', token); // 여기에 로그 추가
-
       const response = NextResponse.json({ message: '로그인 성공!' });
       response.cookies.set('auth-token', token, {
         httpOnly: true,
@@ -48,9 +45,6 @@ export async function POST(req: Request) {
         maxAge: 60 * 60 * 24,
         path: '/',
       });
-
-      // 로그: 쿠키에 저장된 내용 확인
-      console.log('Cookie set with auth-token:', response.cookies.get('auth-token')); // 쿠키 로그 추가
 
       return response;
     }

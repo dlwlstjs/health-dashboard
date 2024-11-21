@@ -23,14 +23,19 @@ function SurveyContent() {
   const [isCompleted, setIsCompleted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [name, setName] = useState<string>("이름 없음");
+  const [email, setEmail] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const token = searchParams.get("token"); // URL에서 token 추출
   const router = useRouter();
 
-  // 서버에서 토큰 검증 및 이름 가져오기
-  const fetchNameFromToken = async (token: string) => {
+  // 서버에서 토큰 검증 및 데이터 가져오기
+  const fetchDataFromToken = async (token: string) => {
     try {
-      const response = await fetch(`/api/verifyToken?token=${token}`);
+      const response = await fetch(`/api/auth/verifyToken`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
 
       if (!response.ok) {
         console.error(`HTTP 오류: ${response.status}`);
@@ -39,12 +44,11 @@ function SurveyContent() {
       }
 
       const data = await response.json();
-
-      // 받아온 데이터 로그로 출력
       console.log("서버 응답 데이터:", data);
 
-      if (data.name) {
-        setName(data.name);
+      if (data?.data?.name && data?.data?.email) {
+        setName(data.data.name);
+        setEmail(data.data.email);
       } else {
         setErrorMessage("유효하지 않은 토큰입니다.");
       }
@@ -56,7 +60,7 @@ function SurveyContent() {
 
   useEffect(() => {
     if (token) {
-      fetchNameFromToken(token);
+      fetchDataFromToken(token);
     }
   }, [token]);
 
@@ -82,7 +86,7 @@ function SurveyContent() {
       const response = await fetch("/api/survey", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, answers, score: scoreString, token }),
+        body: JSON.stringify({ name, email, answers, score: scoreString, token }),
       });
 
       if (!response.ok) {
@@ -100,7 +104,9 @@ function SurveyContent() {
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100">
       <div className="w-full max-w-3xl bg-white p-10 rounded-lg shadow-xl">
-        <h1 className="text-3xl font-bold mb-8 text-center">{name} 님의 사전 문진 항목</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center">
+          {name} 님의 사전 문진 항목
+        </h1>
 
         {QUESTIONS.map((question, index) => (
           <div key={index} className="mb-6">

@@ -129,14 +129,17 @@ export default function Home() {
         },
         body: JSON.stringify({ email: user.email, name: user.name }),
       });
-
+  
+      const result = await response.json();
+  
       if (response.ok) {
         alert(`${user.name}님에게 문진 링크가 발송되었습니다.`);
       } else {
-        console.error("문진 링크 발송에 실패했습니다.");
+        alert(`문진 링크 발송 실패: ${result.message}`);
       }
     } catch (error) {
-      console.error("API 요청 실패:", error);
+      console.error("문진 링크 발송 오류:", error);
+      alert("문진 링크 발송 중 오류가 발생했습니다.");
     }
   };
 
