@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { SCORE_MAP, Answer } from "@/scoreMap";
+import { useSearchParams } from "next/navigation";
+import { Answer } from "@/scoreMap";
 
 const QUESTIONS = [
   "걷는 데 어려움이 있나요?",
@@ -27,7 +27,6 @@ function SurveyContent() {
   const [email, setEmail] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  const router = useRouter();
 
   // 서버에서 토큰 검증 및 데이터 가져오기
   const fetchDataFromToken = async (token: string) => {
@@ -75,13 +74,6 @@ function SurveyContent() {
       return;
     }
 
-    const scoreArray = QUESTIONS.map((question) => {
-      const answer = answers[question];
-      return answer ? SCORE_MAP[answer] : 0;
-    });
-
-    const scoreString = scoreArray.join(",");
-
     try {
       const response = await fetch("/api/survey", {
         method: "POST",
@@ -91,7 +83,10 @@ function SurveyContent() {
 
       const data = await response.json();
 
-      if (response.status === 400 && data.message === "이미 문진을 완료했습니다.") {
+      if (
+        response.status === 400 &&
+        data.message === "이미 문진을 완료했습니다."
+      ) {
         setIsSurveyDone(true); // 이미 문진 완료 상태로 설정
         return;
       }
@@ -104,25 +99,11 @@ function SurveyContent() {
       setIsCompleted(true);
     } catch (error) {
       console.error("문진 결과 저장 오류:", error);
-      setErrorMessage("서버 오류로 문진 결과 저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+      setErrorMessage(
+        "서버 오류로 문진 결과 저장에 실패했습니다. 잠시 후 다시 시도해주세요."
+      );
     }
   };
-
-  if (isSurveyDone) {
-    return (
-      <div className="min-h-screen flex justify-center items-center bg-gray-100">
-        <div className="w-full max-w-3xl bg-white p-10 rounded-lg shadow-xl text-center">
-          <h1 className="text-3xl font-bold mb-8 text-center">이미 문진을 완료했습니다</h1>
-          <button
-            onClick={() => router.push("/")}
-            className="rounded-full bg-black text-white px-8 py-3"
-          >
-            홈으로 돌아가기
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100">
@@ -133,7 +114,9 @@ function SurveyContent() {
 
         {QUESTIONS.map((question, index) => (
           <div key={index} className="mb-6">
-            <p className="mb-6">{index + 1}. {question}</p>
+            <p className="mb-6">
+              {index + 1}. {question}
+            </p>
             <div className="flex justify-center gap-12">
               {OPTIONS.map((option) => (
                 <label key={option} className="flex items-center">
@@ -142,7 +125,12 @@ function SurveyContent() {
                     name={`question${index + 1}`}
                     value={option}
                     checked={answers[`question${index + 1}`] === option}
-                    onChange={() => handleRadioChange(`question${index + 1}`, option as Answer)}
+                    onChange={() =>
+                      handleRadioChange(
+                        `question${index + 1}`,
+                        option as Answer
+                      )
+                    }
                     className="mr-2 peer"
                   />
                   <span className="peer-checked:text-black">{option}</span>
@@ -153,9 +141,7 @@ function SurveyContent() {
         ))}
 
         {errorMessage && (
-          <div className="text-red-500 text-center mt-4">
-            {errorMessage}
-          </div>
+          <div className="text-red-500 text-center mt-4">{errorMessage}</div>
         )}
 
         <div className="mt-8 flex justify-center">
@@ -168,13 +154,33 @@ function SurveyContent() {
         </div>
       </div>
 
+      {isSurveyDone && (
+        <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50">
+          <div className="bg-white p-16 rounded-lg shadow-xl text-center max-w-lg">
+            <h2 className="text-2xl font-semibold mb-6">
+              이미 문진을 완료했습니다!
+            </h2>
+            <div className="flex justify-center mt-10">
+              <button
+                onClick={() => window.close()} // 창 닫기
+                className="rounded-full bg-black text-white px-8 py-3 hover:bg-gray-800 transition-colors"
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {isCompleted && (
         <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50">
           <div className="bg-white p-16 rounded-lg shadow-xl text-center max-w-lg">
-            <h2 className="text-2xl font-semibold mb-6">문진을 완료했습니다!</h2>
+            <h2 className="text-2xl font-semibold mb-6">
+              문진을 완료했습니다!
+            </h2>
             <div className="flex justify-center mt-10">
               <button
-                onClick={() => router.push("/")}
+                onClick={() => window.close()}
                 className="rounded-full bg-black text-white px-8 py-3"
               >
                 확인

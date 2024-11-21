@@ -5,7 +5,7 @@ export async function GET(req: NextRequest) {
   const token = req.cookies.get("auth-token")?.value;
 
   // 토큰 값 확인
-  //console.log("받은 토큰:", token);
+  console.log("받은 토큰:", token);
 
   if (!token) {
     return NextResponse.json({ authenticated: false });
