@@ -4,7 +4,6 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { Doctor } from '@/app/types/DoctorProps';
 
-// 서버에서만 사용되는 비밀키 환경변수
 const secretKey = process.env.NEXT_SECRET_KEY;
 
 export async function POST(req: Request) {

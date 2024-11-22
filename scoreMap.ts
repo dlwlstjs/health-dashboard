@@ -1,4 +1,3 @@
-// scoreMap.ts
 export const SCORE_MAP = {
     전혀없다: 0,
     약간있다: 1,

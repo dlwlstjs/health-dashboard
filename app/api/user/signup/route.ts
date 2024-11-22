@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     }
 
     // 비밀번호 해싱
-    const hashedPassword = await bcrypt.hash(password, 10); // 비밀번호 해싱
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     await db.run(
       `INSERT INTO doctor (username, password, name, gender, birthdate, email)

@@ -47,7 +47,6 @@ export default function LoginPage() {
                 <div className="w-6 h-6"></div>
               </div>
             </div>
-
             <div className="flex flex-col">
               <div className="flex items-center gap-2 justify-end">
                 <label className="text-sm sm:text-base font-[family-name:var(--font-geist-mono)]">
@@ -70,7 +69,6 @@ export default function LoginPage() {
                   </button>
                 </div>
               </div>
-          {/* 로그인 실패 메시지 */}
           {errorMessage && (
             <div className="text-red-500 text-sm sm:text-base text-center mb-4">
               {errorMessage}
@@ -83,7 +81,7 @@ export default function LoginPage() {
             <LoginButton
               userId={userId}
               password={password}
-              setErrorMessage={setErrorMessage} // 에러 메시지 전달
+              setErrorMessage={setErrorMessage}
             />
             <SignupButton onClick={handleSignupClick} />
           </div>

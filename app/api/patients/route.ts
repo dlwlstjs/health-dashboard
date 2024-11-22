@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import { openDb } from "@/app/db/sqlite";
 import { DecodedToken } from "@/app/types/DecodedTokenProps";
 
-// GET: 특정 doctor_id에 해당하는 환자 목록 가져오기
 export async function GET(req: NextRequest) {
   const token = req.cookies.get("auth-token")?.value;
 
@@ -16,8 +15,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const decoded = jwt.verify(token, process.env.NEXT_SECRET_KEY as string) as DecodedToken;
-    const doctorId = decoded.userId; // 토큰의 doctor_id
-    console.log("get의 doctor_id : ",decoded.userId);
+    const doctorId = decoded.userId;
     
     const db = await openDb();
     const patients = await db.all(
@@ -36,7 +34,6 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST: doctor_id에 환자 추가
 export async function POST(req: NextRequest) {
   const token = req.cookies.get("auth-token")?.value;
   
@@ -49,14 +46,12 @@ export async function POST(req: NextRequest) {
 
   try {
     const decoded = jwt.verify(token, process.env.NEXT_SECRET_KEY as string) as DecodedToken;
-    const doctorId = decoded.userId; // 토큰의 doctor_id
-    console.log("POST 요청의 doctor_id:", doctorId);
+    const doctorId = decoded.userId;
 
     const { name, gender, birthDate, email } = await req.json();
 
     const db = await openDb();
 
-    // 동일한 doctor_id와 이메일로 환자가 존재하는지 확인
     const existingPatient = await db.get(
       `SELECT * FROM patient WHERE email = ? AND doctorId = ?`,
       [email, doctorId]
@@ -70,7 +65,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 환자 추가
     await db.run(
       `INSERT INTO patient (name, gender, birthdate, email, doctorId) VALUES (?, ?, ?, ?, ?)`,
       [name, gender, birthDate, email, doctorId]
@@ -82,6 +76,34 @@ export async function POST(req: NextRequest) {
     console.error("DB 오류:", error);
     return NextResponse.json(
       { error: "환자 추가 실패. 서버 오류가 발생했습니다." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const email = searchParams.get("email");
+
+  if (!email) {
+    return NextResponse.json(
+      { error: "삭제할 환자의 이메일이 필요합니다." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const db = await openDb();
+
+    await db.run("DELETE FROM patient WHERE email = ?", [email]);
+    await db.run("DELETE FROM health WHERE email = ?", [email]);
+
+    await db.close();
+    return NextResponse.json({ message: "환자가 성공적으로 삭제되었습니다." });
+  } catch (error) {
+    console.error("환자 삭제 중 오류:", error);
+    return NextResponse.json(
+      { error: "환자 삭제 중 오류가 발생했습니다." },
       { status: 500 }
     );
   }

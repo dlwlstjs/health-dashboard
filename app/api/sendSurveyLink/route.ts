@@ -29,7 +29,6 @@ function generateEncryptedToken(data: object): string {
   return toBase64Url(payload);
 }
 
-// 이메일 전송 함수
 async function sendSurveyEmail(email: string, name: string, token: string): Promise<void> {
   const { EMAIL_USER, EMAIL_PASS } = process.env;
 
@@ -57,7 +56,6 @@ async function sendSurveyEmail(email: string, name: string, token: string): Prom
   await transporter.sendMail(mailOptions);
 }
 
-// API 핸들러
 export async function POST(request: Request) {
   try {
     const { email, name } = await request.json();
@@ -70,12 +68,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: "환경 변수가 설정되지 않았습니다." }, { status: 500 });
     }
 
-    // 토큰 생성 및 암호화
     const token = generateEncryptedToken({ email, name, timestamp: Date.now() });
-
-    // 이메일 전송
     await sendSurveyEmail(email, name, token);
-
     return NextResponse.json({ message: "문진 링크 이메일 발송 완료" });
   } catch (error) {
     console.error("문진 링크 전송 중 오류:", error);

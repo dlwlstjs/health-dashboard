@@ -21,8 +21,8 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "typeRoots": ["node_modules/@types"],  // eslint 제거
-    "types": []  // 불필요한 타입 정의 추가 방지
+    "typeRoots": ["node_modules/@types"],
+    "types": [] 
   },
   "include": [
     "next-env.d.ts",

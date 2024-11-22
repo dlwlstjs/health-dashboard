@@ -21,14 +21,13 @@ type AnswerState = {
 function SurveyContent() {
   const [answers, setAnswers] = useState<AnswerState>({});
   const [isCompleted, setIsCompleted] = useState(false);
-  const [isSurveyDone, setIsSurveyDone] = useState(false); // 이미 문진 완료 여부
+  const [isSurveyDone, setIsSurveyDone] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [name, setName] = useState<string>("이름 없음");
   const [email, setEmail] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
-  // 서버에서 토큰 검증 및 데이터 가져오기
   const fetchDataFromToken = async (token: string) => {
     try {
       const response = await fetch(`/api/auth/verifyToken`, {
@@ -87,7 +86,7 @@ function SurveyContent() {
         response.status === 400 &&
         data.message === "이미 문진을 완료했습니다."
       ) {
-        setIsSurveyDone(true); // 이미 문진 완료 상태로 설정
+        setIsSurveyDone(true);
         return;
       }
 
@@ -162,7 +161,7 @@ function SurveyContent() {
             </h2>
             <div className="flex justify-center mt-100">
               <button
-                onClick={() => window.close()} // 창 닫기
+                onClick={() => window.close()}
                 className="rounded-full bg-black text-white px-8 py-3"
               >
                 닫기
