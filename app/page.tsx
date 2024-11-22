@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import PatientAddModal from "@/app/components/PatientAddModal";
 import SurveyResultModal from "@/app/components/SurveyResultModal";
-import { User } from "./types/user";
+import { User } from "./types/UserProps";
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);

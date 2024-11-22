@@ -7,11 +7,6 @@ import { Doctor } from '@/app/types/DoctorProps';
 // 서버에서만 사용되는 비밀키 환경변수
 const secretKey = process.env.NEXT_SECRET_KEY;
 
-// secretKey가 정의되지 않았을 경우 예외 처리
-if (!secretKey) {
-  throw new Error("SECRET_KEY가 정의되지 않았습니다. 환경 변수를 확인하세요.");
-}
-
 export async function POST(req: Request) {
   const db = await openDb();
   const { userId, password } = await req.json();
@@ -22,11 +17,8 @@ export async function POST(req: Request) {
       [userId.toLowerCase()]
     ) as unknown as Doctor | undefined;
 
-    // 비밀번호 해시 비교
     if (user && user.id && await bcrypt.compare(password, user.password)) {
       const payload = { userId: user.id };
-      
-      // JWT 생성 시 secretKey를 string으로 단언
       const token = jwt.sign(payload, secretKey as string, { expiresIn: '1h' });
 
       const response = NextResponse.json({ message: '로그인 성공!' });

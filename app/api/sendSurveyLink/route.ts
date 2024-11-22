@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 
-// URL-safe Base64 인코딩 함수
+// 인코딩 함수
 function toBase64Url(buffer: Buffer): string {
   return buffer
     .toString("base64")
@@ -11,13 +11,12 @@ function toBase64Url(buffer: Buffer): string {
     .replace(/=+$/, "");
 }
 
-// 사용자 데이터를 암호화하여 고유 링크 생성
 function generateEncryptedToken(data: object): string {
   const secret = process.env.SECRET_KEY as string;
 
   // AES-256-CBC 키와 IV 생성
   const key = Buffer.from(secret.padEnd(32, "0").slice(0, 32), "utf-8");
-  const iv = crypto.randomBytes(16); // 랜덤 IV 생성
+  const iv = crypto.randomBytes(16);
 
   // 암호화
   const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
@@ -26,8 +25,8 @@ function generateEncryptedToken(data: object): string {
     cipher.final(),
   ]);
 
-  const payload = Buffer.concat([iv, encryptedData]); // IV와 암호화된 데이터 결합
-  return toBase64Url(payload); // URL-safe 형태로 반환
+  const payload = Buffer.concat([iv, encryptedData]);
+  return toBase64Url(payload);
 }
 
 // 이메일 전송 함수

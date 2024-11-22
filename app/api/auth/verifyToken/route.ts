@@ -1,22 +1,14 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 
-// URL-safe Base64 디코딩 함수
 function fromBase64Url(base64Url: string): Buffer {
   return Buffer.from(base64Url.replace(/-/g, "+").replace(/_/g, "/"), "base64");
 }
 
-// AES-256-CBC 복호화 함수
 function decryptEncryptedToken(token: string): object {
   const secret = process.env.SECRET_KEY as string;
-
-  // AES-256-CBC 키 생성
   const key = Buffer.from(secret.padEnd(32, "0").slice(0, 32), "utf-8");
-
-  // Base64 URL-safe 형태의 토큰 디코딩
   const payload = fromBase64Url(token);
-
-  // IV(첫 16바이트)와 암호화된 데이터 분리
   const iv = payload.slice(0, 16);
   const encryptedData = payload.slice(16);
 
@@ -27,7 +19,6 @@ function decryptEncryptedToken(token: string): object {
     decipher.final(),
   ]);
 
-  // JSON 문자열 파싱
   return JSON.parse(decryptedData.toString("utf-8"));
 }
 
@@ -43,7 +34,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // 복호화 작업
     const data = decryptEncryptedToken(token);
 
     return NextResponse.json({ message: "토큰 검증 성공", data }, { status: 200 });
