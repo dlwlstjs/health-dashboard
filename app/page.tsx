@@ -8,15 +8,15 @@ import { User } from "./types/UserProps";
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // 페이지당 항목 수
-  const totalPages = Math.ceil(users.length / itemsPerPage); // 총 페이지 수
+  const itemsPerPage = 12;
+  const totalPages = Math.ceil(users.length / itemsPerPage);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<{
     email: string;
     name: string;
   } | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // 로그인 상태 관리
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [doctorId, setDoctorId] = useState<number | null>(null);
   const router = useRouter();
 
@@ -32,14 +32,14 @@ export default function Home() {
 
         if (data.authenticated) {
           setIsAuthenticated(true);
-          setDoctorId(data.user.id); // doctorId 저장
-          fetchPatients(); // 로그인 되어 있으면 환자 목록을 불러옴
+          setDoctorId(data.user.id);
+          fetchPatients();
         } else {
-          router.push("/login"); // 로그인되지 않았다면 로그인 페이지로 리디렉션
+          router.push("/login");
         }
       } catch (error) {
         console.error("인증 상태 확인 오류:", error);
-        router.push("/login"); // 오류가 발생하면 로그인 페이지로 리디렉션
+        router.push("/login");
       }
     };
 
@@ -50,21 +50,20 @@ export default function Home() {
     try {
       const response = await fetch("/api/patients", {
         method: "GET",
-        credentials: "include", // 쿠키 인증 포함
+        credentials: "include",
       });
 
       const data = await response.json();
 
-      // 데이터가 배열인지 확인
       if (Array.isArray(data)) {
-        setUsers(data); // 배열일 경우만 설정
+        setUsers(data);
       } else {
         console.error("API에서 올바르지 않은 데이터 형식 반환:", data);
-        setUsers([]); // 기본값으로 빈 배열 설정
+        setUsers([]);
       }
     } catch (error) {
       console.error("환자 목록을 가져오는 데 실패했습니다:", error);
-      setUsers([]); // 실패 시 빈 배열 설정
+      setUsers([]);
     }
   };
 
@@ -123,7 +122,7 @@ export default function Home() {
   };
 
   const handleViewSurveyResults = (user: User) => {
-    setSelectedUser({ email: user.email, name: user.name }); // email과 name 저장
+    setSelectedUser({ email: user.email, name: user.name });
     setIsSurveyModalOpen(true);
   };
 
@@ -154,7 +153,7 @@ export default function Home() {
     setIsSurveyModalOpen(false);
   };
 
-  if (!isAuthenticated) return null; // 인증되지 않았으면 아무것도 렌더링하지 않음
+  if (!isAuthenticated) return null;
 
   const currentUsers = users.slice(
     (currentPage - 1) * itemsPerPage,
@@ -263,8 +262,8 @@ export default function Home() {
         <SurveyResultModal
           isOpen={isSurveyModalOpen}
           onClose={handleCloseSurveyModal}
-          email={selectedUser.email} // email 전달
-          name={selectedUser.name} // name 전달
+          email={selectedUser.email}
+          name={selectedUser.name}
         />
       )}
     </div>
