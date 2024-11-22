@@ -7,10 +7,16 @@ import { User } from "./types/UserProps";
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // 페이지당 항목 수
+  const totalPages = Math.ceil(users.length / itemsPerPage); // 총 페이지 수
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<{ email: string; name: string } | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); //로그인 상태 관리
+  const [selectedUser, setSelectedUser] = useState<{
+    email: string;
+    name: string;
+  } | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // 로그인 상태 관리
   const [doctorId, setDoctorId] = useState<number | null>(null);
   const router = useRouter();
 
@@ -46,9 +52,9 @@ export default function Home() {
         method: "GET",
         credentials: "include", // 쿠키 인증 포함
       });
-  
+
       const data = await response.json();
-  
+
       // 데이터가 배열인지 확인
       if (Array.isArray(data)) {
         setUsers(data); // 배열일 경우만 설정
@@ -150,8 +156,13 @@ export default function Home() {
 
   if (!isAuthenticated) return null; // 인증되지 않았으면 아무것도 렌더링하지 않음
 
+  const currentUsers = users.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
-    <div className="min-h-screen p-8 sm:p-20 flex justify-center items-start mt-20">
+    <div className="min-h-screen p-8 sm:p-20 flex flex-col justify-between items-center">
       <div className="w-full max-w-5xl">
         <div className="absolute top-8 right-8">
           <button
@@ -187,9 +198,11 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user, index) => (
+              {currentUsers.map((user, index) => (
                 <tr key={user.email}>
-                  <td className="border-b py-2 px-4">{index + 1}</td>
+                  <td className="border-b py-2 px-4">
+                    {(currentPage - 1) * itemsPerPage + index + 1}
+                  </td>
                   <td className="border-b py-2 px-4">{user.name}</td>
                   <td className="border-b py-2 px-4 text-center">
                     <button
@@ -202,7 +215,7 @@ export default function Home() {
                   <td className="border-b py-2 px-4 text-center">
                     <button
                       className="bg-white text-black py-1 px-2 rounded border border-black hover:bg-gray-100"
-                      onClick={() => handleViewSurveyResults(user)} // user 전달
+                      onClick={() => handleViewSurveyResults(user)}
                     >
                       보기
                     </button>
@@ -213,7 +226,33 @@ export default function Home() {
           </table>
         </div>
       </div>
-
+      <div className="mt-6 flex justify-center items-center gap-2">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          className={`px-4 py-2 border rounded ${
+            currentPage === 1
+              ? "opacity-0 pointer-events-none"
+              : "bg-white text-black"
+          }`}
+        >
+          이전
+        </button>
+        <div className="px-4 py-2 border rounded bg-white-100 text-black">
+          {currentPage} / {totalPages}
+        </div>
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          className={`px-4 py-2 border rounded ${
+            currentPage === totalPages
+              ? "opacity-0 pointer-events-none"
+              : "bg-white text-black"
+          }`}
+        >
+          다음
+        </button>
+      </div>
       <PatientAddModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
