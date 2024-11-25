@@ -12,14 +12,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // auth-token이 있으면 쿠키를 만료시키고 성공 메시지 반환
   const response = NextResponse.json({ message: '로그아웃 성공!' });
-  response.cookies.set('auth-token', '', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 0, // 즉시 만료
-    path: '/',
-  });
-
+  response.cookies.delete('auth-token'); // 쿠키 삭제
+  
   return response;
 }

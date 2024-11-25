@@ -9,7 +9,7 @@ export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
-  const totalPages = Math.ceil(users.length / itemsPerPage);
+  const totalPages = Math.ceil(users.length == 0 ? 1 : users.length / itemsPerPage);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<{
