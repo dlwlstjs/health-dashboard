@@ -12,7 +12,6 @@ export async function GET(req: NextRequest) {
       { status: 401 }
     );
   }
-
   try {
     const decoded = jwt.verify(token, process.env.NEXT_SECRET_KEY as string) as DecodedToken;
     const doctorId = decoded.userId;

@@ -43,22 +43,29 @@ const PatientAddModal: React.FC<ModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     const birthDate = `${birthYear}-${birthMonth.padStart(2, "0")}-${birthDay.padStart(2, "0")}`;
-
+  
     const newPatient = {
       name,
       gender: gender === "남" ? "male" : "female",
       birthDate,
       email,
     };
-
+  
     try {
+      // 이메일 중복 여부 확인
+      const response = await fetch(`/api/check-email?email=${encodeURIComponent(email)}`);
+      const data = await response.json();
+      if (data.exists) {
+        alert("이미 존재하는 이메일입니다.");
+        return;
+      }
       await onAddPatient(newPatient);
       resetForm();
       onClose();
     } catch (error) {
-      setError("환자 추가 중 오류가 발생했습니다. 다시 시도해주세요.");
+      alert("환자 추가 중 오류가 발생했습니다. 다시 시도해주세요.");
       console.error("환자 추가 실패:", error);
     }
   };

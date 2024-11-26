@@ -114,6 +114,7 @@ export default function Home() {
       if (response.ok) {
         fetchPatients();
       } else {
+        alert("알 수 없는 오류로 환자 추가에 실패했습니다.\n조금 있다가 다시 시도해주세요.")
         console.error("환자 추가에 실패했습니다.");
       }
     } catch (error) {
@@ -161,7 +162,7 @@ export default function Home() {
       if (response.ok) {
         alert(`${user.name}님에게 문진 링크가 발송되었습니다.`);
       } else {
-        alert(`문진 링크 발송 실패: ${result.message}`);
+        alert(`${result.message}`);
       }
     } catch (error) {
       console.error("문진 링크 발송 오류:", error);

@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 
-function fromBase64Url(base64Url: string): Buffer {
-  return Buffer.from(base64Url.replace(/-/g, "+").replace(/_/g, "/"), "base64");
-}
+// function fromBase64Url(base64Url: string): Buffer {
+//   return Buffer.from(base64Url.replace(/-/g, "+").replace(/_/g, "/"), "base64");
+// }
 
 function decryptEncryptedToken(token: string): object {
   const secret = process.env.SECRET_KEY as string;
-  const key = Buffer.from(secret.padEnd(32, "0").slice(0, 32), "utf-8");
-  const payload = fromBase64Url(token);
+  //const key = Buffer.from(secret.padEnd(32, "0").slice(0, 32), "utf-8");
+  const key = Buffer.from(secret, "utf-8");
+  //const payload = fromBase64Url(token);
+  const payload = Buffer.from(token, "hex");
   const iv = payload.slice(0, 16);
   const encryptedData = payload.slice(16);
 
