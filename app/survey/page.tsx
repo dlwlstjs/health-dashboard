@@ -27,7 +27,7 @@ function SurveyContent() {
   const [email, setEmail] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-
+  const [isTokenValid, setIsTokenValid] = useState(false);
   const fetchDataFromToken = async (token: string) => {
     try {
       const response = await fetch(`/api/auth/verifyToken`, {
@@ -58,6 +58,7 @@ function SurveyContent() {
 
   useEffect(() => {
     if (token) {
+      setIsTokenValid(true);      
       fetchDataFromToken(token);
     }
   }, [token]);
@@ -103,14 +104,26 @@ function SurveyContent() {
       );
     }
   };
-
+  if (!isTokenValid) {  //왜 꼭 한 번은 들어갈까?
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-gray-100">
+        <div className="bg-white p-8 rounded shadow-lg text-center">
+          <h1 className="text-2xl font-bold mb-4">
+            없는 주소입니다.
+          </h1>
+          <p className="text-red-500">
+            설문 링크가 올바르지 않습니다. 링크를 확인해주세요.
+          </p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100">
       <div className="w-full max-w-3xl bg-white p-10 rounded-lg shadow-xl">
         <h1 className="text-3xl font-bold mb-8 text-center">
           {name} 님의 사전 문진 항목
         </h1>
-
         {QUESTIONS.map((question, index) => (
           <div key={index} className="mb-6">
             <p className="mb-6">

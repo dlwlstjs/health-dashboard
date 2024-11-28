@@ -8,8 +8,10 @@ import { User } from "./types/UserProps";
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
-  const totalPages = Math.ceil(users.length == 0 ? 1 : users.length / itemsPerPage);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(
+    users.length == 0 ? 1 : users.length / itemsPerPage
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSurveyModalOpen, setIsSurveyModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<{
@@ -33,9 +35,9 @@ export default function Home() {
         if (data.authenticated) {
           setIsAuthenticated(true);
           setDoctorId(data.user.id);
-          fetchPatients(); 
+          fetchPatients();
         } else {
-          router.push("/login"); 
+          router.push("/login");
         }
       } catch (error) {
         console.error("인증 상태 확인 오류:", error);
@@ -63,7 +65,7 @@ export default function Home() {
       }
     } catch (error) {
       console.error("환자 목록을 가져오는 데 실패했습니다:", error);
-      setUsers([]); 
+      setUsers([]);
     }
   };
 
@@ -114,7 +116,9 @@ export default function Home() {
       if (response.ok) {
         fetchPatients();
       } else {
-        alert("알 수 없는 오류로 환자 추가에 실패했습니다.\n조금 있다가 다시 시도해주세요.")
+        alert(
+          "알 수 없는 오류로 환자 추가에 실패했습니다.\n조금 있다가 다시 시도해주세요."
+        );
         console.error("환자 추가에 실패했습니다.");
       }
     } catch (error) {
@@ -127,9 +131,12 @@ export default function Home() {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`/api/patients?email=${encodeURIComponent(email)}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/patients?email=${encodeURIComponent(email)}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (response.ok) {
         fetchPatients();
@@ -214,9 +221,7 @@ export default function Home() {
                 <th className="border-b py-2 px-4 w-[120px] text-center">
                   문진 결과 보기
                 </th>
-                <th className="border-b py-2 px-4 w-[120px] text-center">
-                  삭제
-                </th>
+                <th className="border-b py-1 px-2 w-[20px] text-center"></th>
               </tr>
             </thead>
             <tbody>
@@ -228,7 +233,7 @@ export default function Home() {
                   <td className="border-b py-2 px-4">{user.name}</td>
                   <td className="border-b py-2 px-4 text-center">
                     <button
-                      className="bg-black text-white py-1 px-2 rounded hover:bg-gray-800"
+                      className="bg-black text-white py-2 px-4 rounded hover:bg-gray-800"
                       onClick={() => handleSendSurveyLink(user)}
                     >
                       발송
@@ -236,19 +241,35 @@ export default function Home() {
                   </td>
                   <td className="border-b py-2 px-4 text-center">
                     <button
-                      className="bg-white text-black py-1 px-2 rounded border border-black hover:bg-gray-100"
+                      className="bg-white text-black py-2 px-4 rounded border border-black hover:bg-gray-100"
                       onClick={() => handleViewSurveyResults(user)}
                     >
                       보기
                     </button>
                   </td>
                   <td className="border-b py-2 px-4 text-center">
-                    <button
-                      className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-700"
-                      onClick={() => handleDeletePatient(user.email)}
-                    >
-                      삭제
-                    </button>
+                    <div className="relative group inline-block">
+                      <button className="text-2xl bg-white px-3 py-1 hover:bg-gray-100">
+                        ⋮
+                      </button>
+                      <div
+                        className="absolute right-0 mt-2 w-28 bg-white border border-gray-300 rounded shadow-md hidden group-hover:block"
+                        style={{ zIndex: 10 }}
+                      >
+                        <button
+                          className="block w-full px-4 py-2 text-left text-black hover:bg-gray-100"
+                          onClick={() => setIsModalOpen(true)}
+                        >
+                          수정
+                        </button>
+                        <button
+                          className="block w-full px-4 py-2 text-left text-red-500 hover:bg-red-100"
+                          onClick={() => handleDeletePatient(user.email)}
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               ))}

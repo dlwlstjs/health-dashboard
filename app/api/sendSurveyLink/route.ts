@@ -20,16 +20,14 @@ function generateEncryptedToken(data: object): string {
   const iv = crypto.randomBytes(16);        //16바이트의 랜덤값 생성. 동일한 입력 데이터라도 IV가 다르면 암호화된 결과가 달라져 패턴이 드러나는 것을 방지
 
   // 암호화
-  const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
+  const cipher = crypto.createCipheriv("aes-256-cbc", key, iv); //256바꾸면 오류남. 메일 전송이 안됨. -> 애초에 생성이 안됐기 때문.
   const encryptedData = Buffer.concat([
-    cipher.update(JSON.stringify(data)),
-    cipher.final(),
+    cipher.update(JSON.stringify(data)),  //데이터가 블록 크기의 배수가 아니라면
+    cipher.final(),                       //final에서 절반을 암호화한다.
   ]);
 
-  const payload = Buffer.concat([iv, encryptedData]);
-  console.log("payload", payload);
-  
-  return payload.toString("hex"); // "hex"로 바꿔서 인코딩했다.
+  const payload = Buffer.concat([iv, encryptedData]);   //한번 더 iv와 조합
+  return payload.toString("hex"); // "base64" -> "hex"로 바꿔서 인코딩했다.
 }
 
 async function sendSurveyEmail(email: string, name: string, token: string): Promise<void> {
@@ -40,7 +38,6 @@ async function sendSurveyEmail(email: string, name: string, token: string): Prom
   }
 
   const surveyLink = `http://localhost:3000/survey?token=${token}`;
-
   const transporter = nodemailer.createTransport({ //-> email 정보는 담는 객체 생성 함수
     service: "gmail",
     auth: {
@@ -55,22 +52,18 @@ async function sendSurveyEmail(email: string, name: string, token: string): Prom
     subject: `${name}님, 문진 링크가 도착했습니다.`,
     text: `안녕하세요, ${name}님!\n\n문진을 위해 아래 링크를 클릭해 주세요:\n${surveyLink}\n\n감사합니다.`,
   };
-
   await transporter.sendMail(mailOptions); //-> 전송
 }
 
 export async function POST(request: Request) {
   try {
     const { email, name } = await request.json();
-
     if (!email || !name) {
       return NextResponse.json({ message: "이메일 또는 이름이 필요합니다." }, { status: 400 });
     }
-
     if (!process.env.SECRET_KEY || !process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
       return NextResponse.json({ message: "환경 변수가 설정되지 않았습니다." }, { status: 500 });
     }
-
     const token = generateEncryptedToken({ email, name, timestamp: Date.now() });
     await sendSurveyEmail(email, name, token);
     return NextResponse.json({ message: "문진 링크 이메일 발송 완료" });

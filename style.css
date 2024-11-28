@@ -1,0 +1,36 @@
+.button-group {
+    display: flex; /* 버튼들을 한 줄에 배치 */
+    gap: 5px; /* 버튼 간 간격을 줄임 */
+  }
+  
+  button {
+    padding: 5px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .edit-button {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .delete-button {
+    background-color: #f44336;
+    color: white;
+  }
+  table {
+    width: 100%;
+    table-layout: fixed; /* 열 너비 고정 */
+  }
+  
+  th, td {
+    text-align: center;
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  td:last-child {
+    width: 50px; /* ⋮ 버튼이 있는 마지막 열 너비 조정 */
+  }
