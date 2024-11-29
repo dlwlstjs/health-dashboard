@@ -13,6 +13,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
     userId: "",
     password: "",
     name: "",
+    hospital:"",
     gender: "male",
     birthYear: currentYear.toString(),
     birthMonth: currentMonth.toString(),
@@ -62,6 +63,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
           userId: "",
           password: "",
           name: "",
+          hospital:"",
           gender: "",
           birthYear: currentYear.toString(),
           birthMonth: currentMonth.toString(),
@@ -123,6 +125,18 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
             )}
           </button>
         </div>
+      </div>
+      <div className="flex flex-col gap-2">
+        <label className="text-sm sm:text-base">병원</label>
+        <input
+          type="text"
+          name="hospital"
+          value={formData.hospital}
+          onChange={handleChange}
+          className="border border-gray-300 rounded h-10 sm:h-12 px-2 w-full"
+          placeholder="소속 병원을 입력하세요"
+          required
+        />
       </div>
       <div className="flex flex-col gap-2">
         <label className="text-sm sm:text-base">이름</label>

@@ -11,9 +11,9 @@ const SignupPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] p-8 gap-8">
-      <div className="w-12 h-12 "></div>
+      <div className="w-12 h-6 "></div>
       <h1 className="text-2xl font-semibold">회원가입</h1>
-      <div className="w-5 h-5 "></div>
+      <div className="w-5 h-3 "></div>
       <div className="w-full max-w-md">
         <SignupForm onSubmit={handleSignupFormSubmit} />
       </div>
