@@ -8,7 +8,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 export default function LoginPage() {
-  const [userId, setUserId] = useState("");
+  const [user_id, setuser_id] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState(""); // 에러 메시지를 관리하는 상태
@@ -41,8 +41,8 @@ export default function LoginPage() {
                   type="text"
                   className="border border-gray-300 rounded h-10 sm:h-12 px-2"
                   placeholder="ID를 입력하세요"
-                  value={userId}
-                  onChange={(e) => setUserId(e.target.value)}
+                  value={user_id}
+                  onChange={(e) => setuser_id(e.target.value)}
                 />
                 <div className="w-6 h-6"></div>
               </div>
@@ -79,7 +79,7 @@ export default function LoginPage() {
 
           <div className="flex gap-4 items-center flex-col sm:flex-row">
             <LoginButton
-              userId={userId}
+              user_id={user_id}
               password={password}
               setErrorMessage={setErrorMessage}
             />

@@ -2,12 +2,12 @@ import React from "react";
 import { LoginButtonProps } from "../types/LoginButtonProps";
 
 const LoginButton: React.FC<LoginButtonProps> = ({
-  userId,
+  user_id,
   password,
   setErrorMessage,
 }) => {
   const handleLoginClick = async () => {
-    if (!userId.trim()) {
+    if (!user_id.trim()) {
       setErrorMessage("아이디를 입력해주세요.");
       return;
     } else if (!password.trim()){
@@ -21,7 +21,7 @@ const LoginButton: React.FC<LoginButtonProps> = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userId, password }),
+        body: JSON.stringify({ user_id, password }),
         credentials: "include",
       });
 

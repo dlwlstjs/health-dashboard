@@ -32,7 +32,8 @@ export async function POST(req: Request) {
 
     // 비밀번호 해싱
     const hashedPassword = await bcrypt.hash(password, 10);
-
+    console.log("hashing pass : ", hashedPassword);
+    
     await db.run(
       `INSERT INTO doctor_test (user_id, password, name, gender, birth_date, email, hospital)
       VALUES (?, ?, ?, ?, ?, ?, ?)`,
