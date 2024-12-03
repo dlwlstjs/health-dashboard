@@ -10,7 +10,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
   const currentDay = today.getDate();
 
   const [formData, setFormData] = useState({
-    userId: "",
+    user_id: "",
     password: "",
     name: "",
     hospital:"",
@@ -45,7 +45,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userId: formData.userId,
+          user_id: formData.user_id,
           password: formData.password,
           name: formData.name,
           gender: formData.gender,
@@ -53,6 +53,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
           birthMonth: formData.birthMonth,
           birthDay: formData.birthDay,
           email,
+          hospital : formData.hospital
         }),
       });
 
@@ -60,7 +61,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
       if (response.ok) {
         alert("회원가입이 완료되었습니다!");
         setFormData({
-          userId: "",
+          user_id: "",
           password: "",
           name: "",
           hospital:"",
@@ -93,8 +94,8 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSubmit }) => {
         <label className="text-sm sm:text-base">아이디</label>
         <input
           type="text"
-          name="userId"
-          value={formData.userId}
+          name="user_id"
+          value={formData.user_id}
           onChange={handleChange}
           className="border border-gray-300 rounded h-10 sm:h-12 px-2 w-full"
           placeholder="아이디를 입력하세요"

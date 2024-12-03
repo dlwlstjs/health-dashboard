@@ -14,6 +14,7 @@ export async function GET(req: Request) {
     "SELECT * FROM patient WHERE email = ?",
     [email]
   );
+  await db.exec('PRAGMA foreign_keys = ON');
   await db.close();
 
   return NextResponse.json({ exists: !!existingPatient });
